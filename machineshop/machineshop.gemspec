@@ -2,10 +2,10 @@
 require File.expand_path('../lib/machineshop/version', __FILE__)
 
 Gem::Specification.new do |gem|
-  gem.authors       = ["John Cox"]
+  gem.authors       = ["machineshop"]
   gem.email         = ["john@mach19.com"]
-  gem.description   = %q{TODO: Write a gem description}
-  gem.summary       = %q{TODO: Write a gem summary}
+  gem.description   = %q{Wraps the machineshop API.}
+  gem.summary       = %q{A convenient way to call into the machineshop API.}
   gem.homepage      = ""
 
   gem.files         = `git ls-files`.split($\)
@@ -13,5 +13,6 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.name          = "machineshop"
   gem.require_paths = ["lib"]
-  gem.version       = Machineshop::VERSION
+  gem.version       = MachineShop::VERSION
+  gem.add_dependency 'rest-client'#, '~> 1.6.7'
 end

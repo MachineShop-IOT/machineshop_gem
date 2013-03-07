@@ -85,7 +85,7 @@ module ApiCalls
       response = RestClient.get url, HEADERS
     else
       url = "#{PRODUCTION_PLATFORM_API}#{endpoint}"
-      response = RestClient.send(http_verb) url, body_hash.to_json, HEADERS
+      response = RestClient.send http_verb url, body_hash.to_json, HEADERS
     end
     JSON.parse(response, :symbolize_names => true)
   end

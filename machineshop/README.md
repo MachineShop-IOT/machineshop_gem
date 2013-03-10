@@ -1,4 +1,4 @@
-# Machineshop
+# MachineShop
 
 TODO: Write a gem description
 

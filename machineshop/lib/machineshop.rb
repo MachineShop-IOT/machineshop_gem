@@ -1,7 +1,7 @@
 require "machineshop/version"
 require "machineshop/api_calls"
 
-module Machineshop
+module MachineShop
   def self.auth_token=(auth_token)
     ApiCalls.auth_token= auth_token
   end

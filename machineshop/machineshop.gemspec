@@ -14,5 +14,9 @@ Gem::Specification.new do |gem|
   gem.name          = "machineshop"
   gem.require_paths = ["lib"]
   gem.version       = MachineShop::VERSION
+  
+  gem.add_development_dependency 'rake'
+  gem.add_development_dependency 'rspec'
+
   gem.add_dependency 'rest-client'#, '~> 1.6.7'
 end

@@ -1,31 +1,26 @@
 require "machineshop/version"
-require "machineshop/api_calls"
+require "machineshop/platform_api_calls"
+require "machineshop/user_session_api_calls"
+require "machineshop/api_helpers"
+require "machineshop/config"
 
 module MachineShop
-  def self.auth_token=(auth_token)
-    ApiCalls.auth_token= auth_token
+  
+  #User session calls
+  def self.authenticate!(email, password)
+    user = {
+      email: email,
+      password: password
+    }
+    
+    response = ApiCalls.post_authenticate user
+    #TODO Raise an error if not authenticated
+    
+    self.auth_token= response[:authentication_token]    
   end
-
-  def self.auth_token
-    ApiCalls.auth_token
-  end
-
-  def self.api_base=(api_base)
-    ApiCalls.api_base= api_base
-  end
-
-  def self.api_base
-    ApiCalls.api_base
-  end
-
-  def self.platform_endpoint=(platform_endpoint)
-    ApiCalls.platform_endpoint= platform_endpoint
-  end
-
-  def self.platform_endpoint
-    ApiCalls.platform_endpoint
-  end
-
+  
+  # Platform calls
+  
   def self.get_rules
     ApiCalls.get_rule
   end
@@ -38,11 +33,11 @@ module MachineShop
     ApiCalls.get_device_instances
   end
 
-  def self.get_device(id)    
+  def self.get_device(id)
     ApiCalls.get_device id
   end
 
-  def self.get_device   
+  def self.get_device
     ApiCalls.get_device
   end
 
@@ -60,11 +55,33 @@ module MachineShop
 
   def self.create_rule(rule_json)
     #TODO Make this take params instead of JSON
-    ApiCalls.create_rule rule_json
+    ApiCalls.post_rule rule_json
   end
 
-  def self.delete_rule(id)    
+  def self.delete_rule(id)
     ApiCalls.delete_rule id
+  end
+
+  def self.create_device(name, manufacturer, model,
+    active, init_cmd, init_params, exe_path, unit_price,
+    sample_data, long_description, image_url, manual_url)
+
+    new_device_type = {
+      name: name,
+      manufacturer: manufacturer,
+      model: model,
+      active: active,
+      init_cmd: init_cmd,
+      init_params: init_params,
+      exe_path: exe_path,
+      unit_price: unit_price,
+      sample_data: sample_data,
+      long_description: long_description,
+      image_url: image_url,
+      manual_url: manual_url
+    }
+
+    ApiCalls.post_device new_device_type
   end
 
 end

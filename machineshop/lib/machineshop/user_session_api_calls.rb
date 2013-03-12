@@ -8,7 +8,7 @@ module MachineShop
       # Specific API calls
       def post_authenticate(user_hash)
         url = user_session_url + "/user/authenticate"
-        post url, headers, user_hash
+        post url, nil, user_hash
       end
     end
   end

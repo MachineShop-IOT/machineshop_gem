@@ -1,12 +1,11 @@
 require 'spec_helper'
 
 MachineShop.api_base_url= 'http://machineshop.dev:3000/api/v0'
-auth_token = nil
-instance_id = nil
-device = nil
-user = nil
 
-describe MachineShop do
+describe MachineShop::User do
+  auth_token = nil
+  user = nil
+
   it "should allow a user to authenticate" do
     auth_token.should be_nil
     auth_token, user = MachineShop::User.authenticate(
@@ -42,11 +41,16 @@ describe MachineShop do
     element_data.should be_kind_of MachineShop::User
   end
 
-  it "should get all device instances for the user" do
-    element_data = user.device_instances
-    #puts "Element Data: #{element_data}"
-    element_data.should_not be_nil
-  end
+end
+
+describe MachineShop::Device do
+
+  auth_token, user = MachineShop::User.authenticate(
+  :email => "admin@machineshop.com",
+  :password => "password"
+  )
+  
+  device = nil
 
   it "should get all devices for the user" do
     element_data = MachineShop::Device.all(
@@ -92,35 +96,5 @@ describe MachineShop do
     element_data.should_not be_nil
     element_data.should be_kind_of MachineShop::Device
   end
-
-#Old
-
-# it "should get all device instances for the user" do
-# element_data = MachineShop.get_device_instances auth_token
-# puts "Device Instances: #{element_data}"
-# element_data.should_not be_nil
-#
-# instance_id = element_data[0][:_id]
-# puts "instance_id: #{instance_id}"
-# instance_id.should_not be_nil
-# end
-#
-# it "should get the count of reports for a device instance for the user" do
-# element_data = MachineShop.get_device_instance_report_count auth_token, instance_id
-# puts "Device Instance Reports: #{element_data}"
-# element_data.should_not be_nil
-# end
-#
-# it "should get all reports for a device instance for the user" do
-# element_data = MachineShop.get_device_instance_reports auth_token, instance_id
-# puts "Device Instance Reports: #{element_data}"
-# element_data.should_not be_nil
-# end
-#
-# it "should get the last report for a device instance for the user" do
-# element_data = MachineShop.get_device_instance_last_report auth_token, instance_id
-# puts "Last Device Instance Report: #{element_data}"
-# element_data.should_not be_nil
-# end
 
 end

@@ -5,14 +5,15 @@ module MachineShop
     include MachineShop::APIOperations::Delete
     
     # Specific API calls
-    def get_device_instances(auth_token, hash_params)
-      url = platform_url + "/device_instance"
-      get url, auth_token, hash_params
+    
+    def report_count(params)      
+      MachineShop.get(report_count_url, @auth_token, params)
     end
+    
+    private
 
-    def get_device_instance_report_count(auth_token, id)
-      url = platform_url + '/platform/device_instance/' + id + '/report_count'
-      get url, auth_token
+    def report_count_url
+      url + '/report_count'
     end
 
   end

@@ -11,11 +11,11 @@ module MachineShop
       when Array
         h.map { |v| objects_to_ids(v) }
       else
-        h
+      h
       end
     end
 
-    def self.convert_to_machineshop_object(resp, auth_token, type=nil)     
+    def self.convert_to_machineshop_object(resp, auth_token, type=nil)
       types = {
         'Device' => Device,
         'DeviceInstance' => DeviceInstance,
@@ -32,12 +32,12 @@ module MachineShop
       when Hash
         # Try converting to a known object class.  If none available, fall back to generic APIResource
         if klass_name = type
-          klass = types[klass_name]
+        klass = types[klass_name]
         end
         klass ||= MachineShopObject
         klass.construct_from(resp, auth_token)
       else
-        resp
+      resp
       end
     end
 
@@ -47,7 +47,7 @@ module MachineShop
       rescue
         false
       else
-        true
+      true
       end
     end
 
@@ -63,7 +63,7 @@ module MachineShop
       when Array
         object.map { |value| symbolize_names(value) }
       else
-        object
+      object
       end
     end
 
@@ -101,3 +101,14 @@ module MachineShop
     end
   end
 end
+
+class String
+  def underscore
+    self.gsub(/::/, '/').
+    gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').
+    gsub(/([a-z\d])([A-Z])/,'\1_\2').
+    tr("-", "_").
+    downcase
+  end
+end
+

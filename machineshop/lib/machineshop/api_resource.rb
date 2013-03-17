@@ -8,7 +8,7 @@ module MachineShop
       if self == APIResource
         raise NotImplementedError.new('APIResource is an abstract class.  You should perform actions on its subclasses (Device, Rule, etc.)')
       end
-      ret = "/platform/#{CGI.escape(class_name.downcase)}"
+      ret = "/platform/#{CGI.escape(class_name.underscore)}"
       puts "Returning url: #{ret}"
       ret
     end

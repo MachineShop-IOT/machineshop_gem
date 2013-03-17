@@ -34,6 +34,7 @@ require 'machineshop/util'
 require 'machineshop/errors/machineshop_error'
 require 'machineshop/errors/api_error'
 require 'machineshop/errors/invalid_request_error'
+require 'machineshop/errors/authentication_error'
 
 
 module MachineShop
@@ -124,13 +125,7 @@ module MachineShop
               else
                 raise
               end
-            rescue RestClient::ExceptionWithResponse => e
-              puts
-              puts "e => #{e}"
-              puts "e.http_code => #{e.http_code}"
-              puts "e.http_body => #{e.http_body}"
-              puts "e.response => #{e.response}"
-              
+            rescue RestClient::ExceptionWithResponse => e                            
               if rcode = e.http_code and rbody = e.http_body
                 self.handle_api_error(rcode, rbody)
               else
@@ -181,11 +176,11 @@ module MachineShop
   end
 
   def invalid_request_error(error, rcode, rbody, error_obj)
-    InvalidRequestError.new(error[:message], error[:param], rcode, rbody, error_obj)
+    InvalidRequestError.new(error, error, rcode, rbody, error_obj)
   end
 
   def authentication_error(error, rcode, rbody, error_obj)
-    AuthenticationError.new(error[:message], rcode, rbody, error_obj)
+    AuthenticationError.new(error, rcode, rbody, error_obj)
   end
 
   def api_error(error, rcode, rbody, error_obj)   

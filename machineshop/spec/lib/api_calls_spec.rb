@@ -22,14 +22,14 @@ describe MachineShop::User do
   it "should get all roles from a static instance" do
     element_data = MachineShop::User.all_roles(auth_token)
 
-    puts "all_roles: #{element_data}"
+    #puts "all_roles: #{element_data}"
     element_data.should_not be_nil
   end
 
   it "should get all roles from a user instance" do
     element_data = user.all_roles
 
-    puts "all_roles: #{element_data}"
+    #puts "all_roles: #{element_data}"
     element_data.should_not be_nil
   end
 
@@ -104,7 +104,7 @@ describe MachineShop::Device do
     },
     auth_token)
 
-    puts "Devices: #{element_data}"
+    #puts "Devices: #{element_data}"
     element_data.should_not be_nil
     element_data.should_not be_empty
   end
@@ -211,6 +211,52 @@ describe MachineShop::Mapping do
   :email => "admin@machineshop.com",
   :password => "password"
   )
+
+  it "should get a geocoded address" do
+    element_data = MachineShop::Mapping.geocode(
+    {
+      :address => "1600 Amphitheatre Parkway, Mountain View, CA",
+      :sensor => "false"
+    },
+    auth_token)
+
+    #puts "GEO: #{element_data}"
+
+    element_data.should_not be_nil
+    element_data.should_not be_empty
+  end
+
+  it "should get directions" do
+    element_data = MachineShop::Mapping.directions(
+    {
+      :origin => "Denver",
+      :destination => "Boston",
+      :sensor => "false"
+    },
+    auth_token)
+
+    #puts "GEO: #{element_data}"
+
+    element_data.should_not be_nil
+    element_data.should_not be_empty
+  end
+
+  it "should get distance" do
+    element_data = MachineShop::Mapping.distance(
+    {
+      :origins => "Vancouver BC",
+      :destinations => "San Francisco",
+      :mode => "bicycling",
+      :language => "fr-FR",
+      :sensor => "false"
+    },
+    auth_token)
+
+    #puts "GEO: #{element_data}"
+
+    element_data.should_not be_nil
+    element_data.should_not be_empty
+  end
 
 end
 

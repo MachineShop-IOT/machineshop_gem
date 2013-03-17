@@ -17,7 +17,8 @@ Gem::Specification.new do |gem|
   
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'rspec'
-  
+    
   gem.add_dependency 'addressable'
   gem.add_dependency 'rest-client'#, '~> 1.6.7'
+  gem.add_dependency('multi_json', '>= 1.0.4', '< 2')
 end

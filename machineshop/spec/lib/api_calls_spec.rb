@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 MachineShop.api_base_url= 'http://machineshop.dev:3000/api/v0'
+publisher_username = 'publisher@machineshop.com'
+publisher_password = 'password'
 
 describe MachineShop::User do
   auth_token = nil
@@ -9,8 +11,8 @@ describe MachineShop::User do
   it "should allow a user to authenticate" do
     auth_token.should be_nil
     auth_token, user = MachineShop::User.authenticate(
-    :email => "admin@machineshop.com",
-    :password => "password"
+    :email => publisher_username,
+    :password => publisher_password
     )
 
     #puts "User Data: #{user}"
@@ -46,8 +48,8 @@ end
 describe MachineShop::Device do
 
   auth_token, user = MachineShop::User.authenticate(
-  :email => "admin@machineshop.com",
-  :password => "password"
+  :email => publisher_username,
+  :password => publisher_password
   )
 
   device = nil
@@ -71,8 +73,8 @@ describe MachineShop::Device do
     },
     auth_token)
 
-    #puts "Element Data: #{element_data}"
-    #puts "element_data.class: #{element_data.class}"
+    puts "Element Data: #{element_data}"
+    puts "element_data.class: #{element_data.class}"
 
     element_data.should_not be_nil
     element_data.should be_kind_of MachineShop::Device
@@ -123,8 +125,8 @@ end
 describe MachineShop::DeviceInstance do
 
   auth_token, user = MachineShop::User.authenticate(
-  :email => "admin@machineshop.com",
-  :password => "password"
+  :email => publisher_username,
+  :password => publisher_password
   )
 
   device = nil
@@ -208,8 +210,8 @@ end
 describe MachineShop::Mapping do
 
   auth_token, user = MachineShop::User.authenticate(
-  :email => "admin@machineshop.com",
-  :password => "password"
+  :email => publisher_username,
+  :password => publisher_password
   )
 
   it "should get a geocoded address" do
@@ -263,8 +265,8 @@ end
 describe MachineShop::Meter do
 
   auth_token, user = MachineShop::User.authenticate(
-  :email => "admin@machineshop.com",
-  :password => "password"
+  :email => publisher_username,
+  :password => publisher_password
   )
 
 end
@@ -272,8 +274,8 @@ end
 describe MachineShop::Report do
 
   auth_token, user = MachineShop::User.authenticate(
-  :email => "admin@machineshop.com",
-  :password => "password"
+  :email => publisher_username,
+  :password => publisher_password
   )
 
 end
@@ -281,8 +283,8 @@ end
 describe MachineShop::Rule do
 
   auth_token, user = MachineShop::User.authenticate(
-  :email => "admin@machineshop.com",
-  :password => "password"
+  :email => publisher_username,
+  :password => publisher_password
   )
 
 end
@@ -290,8 +292,35 @@ end
 describe MachineShop::Util do
 
   auth_token, user = MachineShop::User.authenticate(
-  :email => "admin@machineshop.com",
-  :password => "password"
+  :email => publisher_username,
+  :password => publisher_password
   )
+
+  it "should send an email" do
+    element_data = MachineShop::Utility.email(
+    {
+      :subject => "From the machineshop",
+      :body => "The body of an email goes here.\nEscaped chars should work.",
+      :to => "none@mach19.com"
+    },
+    auth_token)
+
+    #puts "element_data: #{element_data}"
+
+    element_data[:http_code].should be(200)
+  end
+
+  it "should send an sms" do
+    element_data = MachineShop::Utility.sms(
+    {
+      :message => "This is a text from the platform",
+      :to => "13035551212"
+    },
+    auth_token)
+
+    #puts "element_data: #{element_data}"
+
+    element_data[:http_code].should be(200)
+  end
 
 end

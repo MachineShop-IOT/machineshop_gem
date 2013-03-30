@@ -1,5 +1,5 @@
 module MachineShop
-  class Utility
+  class Utility < APIResource
     def self.email(params={}, auth_token)
       MachineShop.post(email_url, auth_token, params)
     end
@@ -11,15 +11,19 @@ module MachineShop
     private
 
     def self.email_url
-      url + '/payload_fields'
+      url + '/email'
     end
 
     def self.sms_url
       url + '/SMS'
+    end    
+    
+    def refresh      
+      raise NotImplementedError.new('Utility is a helper api.  You should not perform this action on it')
     end
 
-    def self.url
-      '/platform/utility'
+    def self.retrieve(id, auth_token=nil)
+       raise NotImplementedError.new('Utility is a helper api.  You should not perform this action on it')
     end
 
   end

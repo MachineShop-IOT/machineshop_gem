@@ -136,12 +136,17 @@ module MachineShop
             end
             
             rbody = response.body
-            rcode = response.code
+            rcode = response.code                       
+            
             begin
               # Would use :symbolize_names => true, but apparently there is
               # some library out there that makes symbolize_names not work.
-              resp = MachineShop::JSON.load(rbody)
-              resp = Util.symbolize_names(resp)
+              resp = MachineShop::JSON.load(rbody)              
+              resp ||= {}
+              resp = Util.symbolize_names(resp)              
+              
+              resp.merge!({:http_code => rcode})
+              return resp
             rescue MultiJson::DecodeError
               raise APIError.new("Invalid response object from API: #{rbody.inspect} (HTTP response code was #{rcode})", rcode, rbody)
             end
@@ -158,7 +163,7 @@ module MachineShop
       error_obj = MachineShop::JSON.load(rbody)
       error_obj = Util.symbolize_names(error_obj)
       error = error_obj[:error] or raise MachineShopError.new # escape from parsing
-    rescue MultiJson::DecodeError, StripeError
+    rescue MultiJson::DecodeError, MachineShopError
       raise APIError.new("Invalid response object from API: #{rbody.inspect} (HTTP response code was #{rcode})", rcode, rbody)
     end
 
@@ -168,8 +173,7 @@ module MachineShop
     when 401
       raise authentication_error(error, rcode, rbody, error_obj)
     when 402
-      # TODO Come up with errors
-      #raise card_error(error, rcode, rbody, error_obj)
+      # TODO Come up with errors      
     else
       raise api_error(error, rcode, rbody, error_obj)
     end
@@ -190,13 +194,13 @@ module MachineShop
   def handle_restclient_error(e)
     case e
     when RestClient::ServerBrokeConnection, RestClient::RequestTimeout
-      message = "Could not connect to Stripe (#{@@api_base}).  Please check your internet connection and try again.  If this problem persists, you should check Stripe's service status at https://twitter.com/stripestatus, or let us know at support@stripe.com."
+      message = "Could not connect to MachineShop (#{@@api_base_url}).  Please check your internet connection and try again.  If this problem persists, you should check MachineShop's service status."
     when RestClient::SSLCertificateNotVerified
-      message = "Could not verify Stripe's SSL certificate.  Please make sure that your network is not intercepting certificates.  (Try going to https://api.stripe.com/v1 in your browser.)  If this problem persists, let us know at support@stripe.com."
+      message = "Could not verify MachineShops's SSL certificate.  Please make sure that your network is not intercepting certificates."
     when SocketError
-      message = "Unexpected error communicating when trying to connect to Stripe.  HINT: You may be seeing this message because your DNS is not working.  To check, try running 'host stripe.com' from the command line."
+      message = "Unexpected error communicating when trying to connect to MachineShop (#{@@api_base_url}).  HINT: You may be seeing this message because your DNS is not working."
     else
-      message = "Unexpected error communicating with Stripe.  If this problem persists, let us know at support@stripe.com."
+      message = "Unexpected error communicating with MachineShop"
     end
     message += "\n\n(Network error: #{e.message})"
     raise APIConnectionError.new(message)

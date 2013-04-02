@@ -16,10 +16,16 @@ module MachineShop
     
     def all_roles
       MachineShop.get(self.class.role_url, @auth_token)
+    end       
+    
+    def device_instances(filters={})
+      filters.merge!(:user_id => self.id)
+      MachineShop::DeviceInstance.all(filters, @auth_token)
     end
     
-    def device_instances
-      MachineShop.get(url + '/device_instances', @auth_token)
+    def meters(filters={})
+      filters.merge!(:user_id => self.id)
+      MachineShop::Meter.all(filters, @auth_token)
     end
     
     private

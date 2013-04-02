@@ -145,7 +145,7 @@ module MachineShop
               resp ||= {}
               resp = Util.symbolize_names(resp)              
               
-              resp.merge!({:http_code => rcode})
+              resp.merge!({:http_code => rcode}) if resp.is_a?(Hash)
               return resp
             rescue MultiJson::DecodeError
               raise APIError.new("Invalid response object from API: #{rbody.inspect} (HTTP response code was #{rcode})", rcode, rbody)

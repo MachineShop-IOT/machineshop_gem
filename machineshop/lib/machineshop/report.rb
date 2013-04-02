@@ -2,10 +2,10 @@ module MachineShop
   class Report < APIResource
     include MachineShop::APIOperations::List    
     
-    # Specific API calls
-    def get_data_monitor(auth_token, monitor_hash)
-      url = platform_url + "/data/monitor"
-      get url, auth_token, monitor_hash
+    def self.url()    
+      ret = "/#{CGI.escape(class_name.underscore)}"
+      puts "Returning url: #{ret}"
+      ret
     end
 
   end

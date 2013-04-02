@@ -10,6 +10,16 @@ module MachineShop
       MachineShop.get(report_count_url, @auth_token, params)
     end
     
+    def reports(filters={})
+      filters.merge!(:device_instance_id => self.id)
+      MachineShop::Report.all(filters, @auth_token)
+    end
+    
+    def meters(filters={})
+      filters.merge!(:device_instance_id => self.id)
+      MachineShop::Meter.all(filters, @auth_token)
+    end
+    
     private
 
     def report_count_url

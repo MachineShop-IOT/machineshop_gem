@@ -205,6 +205,24 @@ describe MachineShop::DeviceInstance do
     element_data.should_not be_empty
   end
 
+  it "should get all devices via a user" do
+    element_data = user.device_instances
+
+    #puts "Device Instance: #{element_data}"
+
+    element_data.should_not be_nil
+    element_data.should_not be_empty
+  end
+
+  it "should get all devices via a user with a filter" do
+    element_data = user.device_instances({:name => device_instance.name})
+
+    #puts "Device Instance: #{element_data}"
+
+    element_data.should_not be_nil
+    element_data.should_not be_empty
+  end
+
 end
 
 describe MachineShop::Mapping do
@@ -269,6 +287,24 @@ describe MachineShop::Meter do
   :password => publisher_password
   )
 
+  it "should get all meter data" do
+    element_data = MachineShop::Meter.all({}, auth_token)
+
+    puts "element_data: #{element_data}"
+
+    element_data.should_not be_nil
+    element_data.should_not be_empty
+  end
+
+  it "should get meters via a user" do
+    element_data = user.meters
+
+    #puts "Device Instance: #{element_data}"
+
+    element_data.should_not be_nil
+    element_data.should_not be_empty
+  end
+
 end
 
 describe MachineShop::Report do
@@ -277,6 +313,15 @@ describe MachineShop::Report do
   :email => publisher_username,
   :password => publisher_password
   )
+
+  it "should get all report data" do
+    element_data = MachineShop::Report.all({}, auth_token)
+
+    puts "element_data: #{element_data}"
+
+    element_data.should_not be_nil
+    element_data.should_not be_empty
+  end
 
 end
 

@@ -3,11 +3,16 @@ module MachineShop
     include MachineShop::APIOperations::List
     include MachineShop::APIOperations::Create
     include MachineShop::APIOperations::Delete
-    
+
     # Specific API calls
     def get_rules(auth_token)
       url = platform_url + "/rule"
-      get url, auth_token
+      MachineShop.get(url,auth_token)
+      #get url, auth_token
+    end
+
+    def platform_url
+      '/platform'
     end
 
     def get_rule(auth_token, id)

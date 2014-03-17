@@ -1,7 +1,7 @@
 module MachineShop
   class Device < APIResource
     include MachineShop::APIOperations::List
-    include MachineShop::APIOperations::Create    
+    include MachineShop::APIOperations::Create
     
     # Specific API calls            
     def payload_fields(params=nil)
@@ -10,6 +10,8 @@ module MachineShop
     
     def create_instance(params)
       params.merge!({:device_id => self.id})
+      puts "Niroj ko debug : #{self.created_at}"
+      #from test , self contains -> device object
       
       puts "params: #{params}"
       

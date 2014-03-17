@@ -1,8 +1,28 @@
 require 'spec_helper'
 
-MachineShop.api_base_url= 'http://machineshop.dev:3000/api/v0'
-publisher_username = 'publisher@machineshop.com'
+#MachineShop.api_base_url= 'http://machineshop.dev:3000/api/v0'
+MachineShop.api_base_url= 'http://stage.services.machineshop.io/api/v0'
+
+#publisher_username = 'publisher@machineshop.com'
+publisher_username = 'admin@csr.com'
 publisher_password = 'password'
+
+
+describe "Rubysession" do
+  it "should store session " do
+    session[:user_id] = "hello"
+  end
+end
+
+describe ".delete" do
+  it "should test test" do
+    test = MachineShop::APIOperations::list
+
+
+  end
+
+
+end
 
 describe MachineShop::User do
   auth_token = nil
@@ -15,7 +35,7 @@ describe MachineShop::User do
     :password => publisher_password
     )
 
-    #puts "User Data: #{user}"
+    puts "User Data: #{user}"
     auth_token.should_not be_nil
     user.should_not be_nil
     user.should be_kind_of MachineShop::User
@@ -24,11 +44,13 @@ describe MachineShop::User do
   it "should get all roles from a static instance" do
     element_data = MachineShop::User.all_roles(auth_token)
 
-    #puts "all_roles: #{element_data}"
+    puts "all_roles: #{element_data}"
     element_data.should_not be_nil
   end
 
   it "should get all roles from a user instance" do
+
+    puts " here user is : #{user}"
     element_data = user.all_roles
 
     #puts "all_roles: #{element_data}"
@@ -152,7 +174,7 @@ describe MachineShop::DeviceInstance do
     },
     auth_token)
 
-    #puts "device: #{device.inspect}"
+    puts "device: #{device.inspect}"
 
     # Now create an instance
     device_instance = device.create_instance(
@@ -331,6 +353,18 @@ describe MachineShop::Rule do
   :email => publisher_username,
   :password => publisher_password
   )
+
+  puts "auth_token ma #{auth_token}"
+  puts "user ma #{user}"
+  it "should get all the rules " do
+
+    #rules = MachineShop::Rule.new.get_rules(auth_token)
+    rules = MachineShop::Rule.new.get_rules(auth_token)
+    #get_rule
+    puts "rules haru : #{rules}"
+    rules.should_not be_nil
+
+  end
 
 end
 

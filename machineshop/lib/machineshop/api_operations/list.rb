@@ -4,8 +4,7 @@ module MachineShop
       module ClassMethods
         def all(filters={}, auth_token=nil)
           response = MachineShop.get(url, auth_token, filters)
-          puts "hello #{response}"
-          Util.convert_to_machineshop_object(response, auth_token, self.class_name)         
+          Util.convert_to_machineshop_object(response, auth_token, self.class_name)
         end
       end
 

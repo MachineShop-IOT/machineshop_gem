@@ -13,6 +13,7 @@ require 'multi_json'
 require 'machineshop/api_operations/create'
 require 'machineshop/api_operations/delete'
 require 'machineshop/api_operations/list'
+require 'machineshop/api_operations/update'
 
 # Resources
 
@@ -24,6 +25,7 @@ require 'machineshop/machineshop_object'
 require 'machineshop/mapping'
 require 'machineshop/meter'
 require 'machineshop/report'
+require 'machineshop/customer'
 require 'machineshop/rule'
 require 'machineshop/user'
 require 'machineshop/utility'
@@ -73,6 +75,7 @@ module MachineShop
       end
 
       def platform_request(url, auth_token, body_hash=nil, http_verb=:get )
+        puts "body_hash is #{body_hash}"
         opts = nil
         api_uri = api_base_url + url
         headers = self.headers(auth_token)

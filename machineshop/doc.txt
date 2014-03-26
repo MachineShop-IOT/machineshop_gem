@@ -1,0 +1,50 @@
+#response from authenticate
+
+{:_id=>"52160c8e981800aaef000001",
+ :authentication_token=>"2jzZmcHWLZyghsxcB16E",
+ :company_name=>"CSR",
+ :current_sign_in_at=>"2014-03-21T09:32:13Z",
+ :current_sign_in_ip=>"202.51.76.235",
+ :email=>"admin@csr.com",
+ :first_name=>"CSR",
+ :keychain=>{},
+ :last_name=>"Admin",
+ :last_sign_in_at=>"2014-03-21T09:11:08Z",
+ :last_sign_in_ip=>"202.51.76.235",
+ :logo_url=>nil,
+ :notification_method=>"sms",
+ :phone_number=>"+1 (123) 456-7890",
+ :role=>"admin",
+ :sign_in_count=>7910,
+ :tag_ids=>[],
+ :http_code=>200}
+
+
+
+#user object
+
+{
+  "id": "52160c8e981800aaef000001",
+  "_id": "52160c8e981800aaef000001",
+  "authentication_token": "2jzZmcHWLZyghsxcB16E",
+  "company_name": "CSR",
+  "current_sign_in_at": "2014-03-21T09:30:42Z",
+  "current_sign_in_ip": "202.51.76.235",
+  "email": "admin@csr.com",
+  "first_name": "CSR",
+  "keychain": {},
+  "last_name": "Admin",
+  "last_sign_in_at": "2014-03-21T09:32:13Z",
+  "last_sign_in_ip": "202.51.76.235",
+  "logo_url": null,
+  "notification_method": "sms",
+  "phone_number": "+1 (123) 456-7890",
+  "role": "admin",
+  "sign_in_count": 7912,
+  "tag_ids": [
+
+  ],
+  "http_code": 200
+}
+
+

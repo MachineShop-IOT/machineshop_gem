@@ -14,16 +14,6 @@ describe "Rubysession" do
   end
 end
 
-describe ".delete" do
-  it "should test test" do
-    test = MachineShop::APIOperations::list
-
-
-  end
-
-
-end
-
 describe MachineShop::User do
   auth_token = nil
   user = nil
@@ -31,8 +21,8 @@ describe MachineShop::User do
   it "should allow a user to authenticate" do
     auth_token.should be_nil
     auth_token, user = MachineShop::User.authenticate(
-    :email => publisher_username,
-    :password => publisher_password
+        :email => publisher_username,
+        :password => publisher_password
     )
 
     puts "User Data: #{user}"
@@ -70,30 +60,30 @@ end
 describe MachineShop::Device do
 
   auth_token, user = MachineShop::User.authenticate(
-  :email => publisher_username,
-  :password => publisher_password
+      :email => publisher_username,
+      :password => publisher_password
   )
 
   device = nil
 
   it "should create devices for the user" do
     element_data = MachineShop::Device.create(
-    {
-      :name =>  "my_device",
-      :type => "Test",
-      :manufacturer =>  "a company",
-      :model =>  "D-vice 1000",
-      :active =>  "yes",
-      :init_cmd =>  "my_init_cmd",
-      :init_params =>  "{'init':'go'}",
-      :exe_path =>  "/etc/foo",
-      :unit_price =>  "$199.99",
-      :sample_data =>  "some arbitrary sample data",
-      :long_description =>  "This device tracks position and NCAA football conference.",
-      :image_url =>  "http://someurl.com/your_image.png",
-      :manual_url =>  "http://someurl.com/manual.pdf"
-    },
-    auth_token)
+        {
+            :name =>  "my_device",
+            :type => "Test",
+            :manufacturer =>  "a company",
+            :model =>  "D-vice 1000",
+            :active =>  "yes",
+            :init_cmd =>  "my_init_cmd",
+            :init_params =>  "{'init':'go'}",
+            :exe_path =>  "/etc/foo",
+            :unit_price =>  "$199.99",
+            :sample_data =>  "some arbitrary sample data",
+            :long_description =>  "This device tracks position and NCAA football conference.",
+            :image_url =>  "http://someurl.com/your_image.png",
+            :manual_url =>  "http://someurl.com/manual.pdf"
+        },
+        auth_token)
 
     puts "Element Data: #{element_data}"
     puts "element_data.class: #{element_data.class}"
@@ -104,9 +94,9 @@ describe MachineShop::Device do
 
   it "should get all devices for the user" do
     element_data = MachineShop::Device.all(
-    {:page => 1,
-      :per_page => 10},
-    auth_token)
+        {:page => 1,
+         :per_page => 10},
+        auth_token)
     device = element_data[0]
     #puts "Devices: #{element_data}"
     device.should_not be_nil
@@ -123,10 +113,10 @@ describe MachineShop::Device do
 
   it "should get a device for the user by name" do
     element_data = MachineShop::Device.all(
-    {
-      :name => device.name
-    },
-    auth_token)
+        {
+            :name => device.name
+        },
+        auth_token)
 
     #puts "Devices: #{element_data}"
     element_data.should_not be_nil
@@ -147,41 +137,41 @@ end
 describe MachineShop::DeviceInstance do
 
   auth_token, user = MachineShop::User.authenticate(
-  :email => publisher_username,
-  :password => publisher_password
+      :email => publisher_username,
+      :password => publisher_password
   )
 
   device = nil
   device_instance = nil
 
   it "should create a device instance for the user" do
-  # First create a device to use
+    # First create a device to use
     device = MachineShop::Device.create(
-    {
-      :name =>  "my_device",
-      :type => "Test",
-      :manufacturer =>  "a company",
-      :model =>  "D-vice 1000",
-      :active =>  "yes",
-      :init_cmd =>  "my_init_cmd",
-      :init_params =>  "{'init':'go'}",
-      :exe_path =>  "/etc/foo",
-      :unit_price =>  "$199.99",
-      :sample_data =>  "some arbitrary sample data",
-      :long_description =>  "This device tracks position and NCAA football conference.",
-      :image_url =>  "http://someurl.com/your_image.png",
-      :manual_url =>  "http://someurl.com/manual.pdf"
-    },
-    auth_token)
+        {
+            :name =>  "my_device",
+            :type => "Test",
+            :manufacturer =>  "a company",
+            :model =>  "D-vice 1000",
+            :active =>  "yes",
+            :init_cmd =>  "my_init_cmd",
+            :init_params =>  "{'init':'go'}",
+            :exe_path =>  "/etc/foo",
+            :unit_price =>  "$199.99",
+            :sample_data =>  "some arbitrary sample data",
+            :long_description =>  "This device tracks position and NCAA football conference.",
+            :image_url =>  "http://someurl.com/your_image.png",
+            :manual_url =>  "http://someurl.com/manual.pdf"
+        },
+        auth_token)
 
     puts "device: #{device.inspect}"
 
     # Now create an instance
     device_instance = device.create_instance(
-    {
-      :name => "My little instance",
-      :active => "yes"
-    }
+        {
+            :name => "My little instance",
+            :active => "yes"
+        }
     )
 
     #puts "Device Instance: #{device_instance.inspect}"
@@ -250,17 +240,17 @@ end
 describe MachineShop::Mapping do
 
   auth_token, user = MachineShop::User.authenticate(
-  :email => publisher_username,
-  :password => publisher_password
+      :email => publisher_username,
+      :password => publisher_password
   )
 
   it "should get a geocoded address" do
     element_data = MachineShop::Mapping.geocode(
-    {
-      :address => "1600 Amphitheatre Parkway, Mountain View, CA",
-      :sensor => "false"
-    },
-    auth_token)
+        {
+            :address => "1600 Amphitheatre Parkway, Mountain View, CA",
+            :sensor => "false"
+        },
+        auth_token)
 
     #puts "GEO: #{element_data}"
 
@@ -270,12 +260,12 @@ describe MachineShop::Mapping do
 
   it "should get directions" do
     element_data = MachineShop::Mapping.directions(
-    {
-      :origin => "Denver",
-      :destination => "Boston",
-      :sensor => "false"
-    },
-    auth_token)
+        {
+            :origin => "Denver",
+            :destination => "Boston",
+            :sensor => "false"
+        },
+        auth_token)
 
     #puts "GEO: #{element_data}"
 
@@ -285,14 +275,14 @@ describe MachineShop::Mapping do
 
   it "should get distance" do
     element_data = MachineShop::Mapping.distance(
-    {
-      :origins => "Vancouver BC",
-      :destinations => "San Francisco",
-      :mode => "bicycling",
-      :language => "fr-FR",
-      :sensor => "false"
-    },
-    auth_token)
+        {
+            :origins => "Vancouver BC",
+            :destinations => "San Francisco",
+            :mode => "bicycling",
+            :language => "fr-FR",
+            :sensor => "false"
+        },
+        auth_token)
 
     #puts "GEO: #{element_data}"
 
@@ -305,14 +295,14 @@ end
 describe MachineShop::Meter do
 
   auth_token, user = MachineShop::User.authenticate(
-  :email => publisher_username,
-  :password => publisher_password
+      :email => publisher_username,
+      :password => publisher_password
   )
 
   it "should get all meter data" do
     element_data = MachineShop::Meter.all({}, auth_token)
 
-    puts "element_data: #{element_data}"
+    puts "element_data from all: #{element_data}"
 
     element_data.should_not be_nil
     element_data.should_not be_empty
@@ -321,6 +311,7 @@ describe MachineShop::Meter do
   it "should get meters via a user" do
     element_data = user.meters
 
+    puts "meters via user: #{element_data}"
     #puts "Device Instance: #{element_data}"
 
     element_data.should_not be_nil
@@ -332,8 +323,8 @@ end
 describe MachineShop::Report do
 
   auth_token, user = MachineShop::User.authenticate(
-  :email => publisher_username,
-  :password => publisher_password
+      :email => publisher_username,
+      :password => publisher_password
   )
 
   it "should get all report data" do
@@ -345,17 +336,30 @@ describe MachineShop::Report do
     element_data.should_not be_empty
   end
 
+
+
+  it "should get report of specific device" do
+    element_data = MachineShop::Report.all(
+        ({:device_instance_id => '531f00e5981800ad58000006',
+          :per_page=>'1000',
+          #:created_at_between=>'2013-11-04T00:00:00_2014-03-19T17:02:00'
+        }), auth_token)
+
+    puts "element data of f00e5981800ad58000006 #{element_data} "
+
+    element_data.should_not be_nil
+  end
+
+
 end
 
 describe MachineShop::Rule do
 
+  rules=nil
   auth_token, user = MachineShop::User.authenticate(
-  :email => publisher_username,
-  :password => publisher_password
+      :email => publisher_username,
+      :password => publisher_password
   )
-
-  puts "auth_token ma #{auth_token}"
-  puts "user ma #{user}"
   it "should get all the rules " do
 
     #rules = MachineShop::Rule.new.get_rules(auth_token)
@@ -364,6 +368,21 @@ describe MachineShop::Rule do
     puts "rules haru : #{rules}"
     rules.should_not be_nil
 
+
+  end
+
+  it "should get comparison rule_conditions" do
+    rule_conditions = MachineShop::Rule.new.get_comparison_rule_conditions(auth_token)
+    puts "rule comparison  : #{rule_conditions.inspect}"
+    rule_conditions.should_not be_nil
+
+  end
+
+  it "should get rule by id" do
+    ruleById = MachineShop::Rule.new.get_rule(auth_token,'52f2807998180070c0000048')
+    puts "rule by id  : #{ruleById}"
+    ruleById.should_not be_nil
+
   end
 
 end
@@ -371,35 +390,108 @@ end
 describe MachineShop::Util do
 
   auth_token, user = MachineShop::User.authenticate(
-  :email => publisher_username,
-  :password => publisher_password
+      :email => publisher_username,
+      :password => publisher_password
   )
 
   it "should send an email" do
     element_data = MachineShop::Utility.email(
-    {
-      :subject => "From the machineshop",
-      :body => "The body of an email goes here.\nEscaped chars should work.",
-      :to => "none@mach19.com"
-    },
-    auth_token)
+        {
+            :subject => "hello there From the machineshop",
+            :body => "The body of an email goes here.\nEscaped chars should work.",
+            :to => "niroj@bajratechnologies.com"
+        },
+        auth_token)
 
-    #puts "element_data: #{element_data}"
+    puts "element_data: #{element_data}"
 
-    element_data[:http_code].should be(200)
+    #element_data[:http_code].should be(200)
   end
 
   it "should send an sms" do
     element_data = MachineShop::Utility.sms(
-    {
-      :message => "This is a text from the platform",
-      :to => "13035551212"
-    },
-    auth_token)
+        {
+            :message => "This is a text from the platform",
+            :to => "13035551212"
+        },
+        auth_token)
 
     #puts "element_data: #{element_data}"
 
     element_data[:http_code].should be(200)
   end
 
+end
+
+describe MachineShop::Customer do
+
+  #update = MachineShop::Customer.update
+
+
+
+
+  auth_token , user = MachineShop::User.authenticate(
+      :email => publisher_username,
+      :password => publisher_password
+  )
+
+  customers = nil
+
+  it "should get all the customers " do
+    customers = MachineShop::Customer.all({}, auth_token)
+
+    puts "customers are #{customers}"
+
+    #puts "first customer is : #{customers[0][:id]}"
+
+    customers.should_not be_nil
+  end
+
+
+  it "should create customer " do
+
+    customer = MachineShop::Customer.create({:email=>"gvhfbs@bajratechnologies.com",
+                                             :password=>'password',
+                                             :notification_method=>'sms',
+                                             :first_name=>'niroj',:last_name=>'sapkota',
+                                             :phone_number=>'98989898989',
+                                             :company_name=>'technology co'
+
+                                            },auth_token)
+    puts "created customer is #{customer}"
+    customer.should_not be_nil
+  end
+
+
+  specificCustomer = nil
+  it "should get customer by customer id " do
+
+    specificCustomer = MachineShop::Customer.retrieve(customers[0].id, auth_token)
+    puts "customer id- #{customers[0].id}  is  #{specificCustomer}"
+    specificCustomer.should_not be_nil
+  end
+
+
+=begin
+  #success test
+
+  it "should delete customer with id " do
+
+    #puts
+    puts "deleting customer with id : #{customers[0].id}"
+
+    delete = specificCustomer.delete
+    #delete = MachineShop::Customer.delete(customers[0].id,auth_token)
+    puts "delete #{delete}"
+    delete.http_code.should eq 200
+  end
+=end
+
+
+  it "should update the customer with id " do
+
+    puts "updating customer with id : #{customers[0].id}"
+    update = MachineShop::Customer.update(customers[0].id,auth_token,{:notification_method => 'email'})
+    puts "update #{update}"
+  end
 end

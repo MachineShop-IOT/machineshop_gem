@@ -24,7 +24,8 @@ module MachineShop
         'Report' => Report,
         'Rule' => Rule,
         'User' => User,
-        'Utility' => Utility
+        'Utility' => Utility,
+        'Customer'=> Customer
       }
       case resp
       when Array

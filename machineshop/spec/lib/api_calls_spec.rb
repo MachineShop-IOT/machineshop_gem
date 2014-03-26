@@ -308,12 +308,17 @@ describe MachineShop::Meter do
     element_data.should_not be_empty
   end
 
+  it "should get meter by id " do
+
+    element_data = MachineShop::Meter.retrieve('527ac622ff73462550000001', auth_token)
+    puts "meter by id : #{element_data}"
+    element_data.should_not be_nil
+  end
+
   it "should get meters via a user" do
     element_data = user.meters
 
     puts "meters via user: #{element_data}"
-    #puts "Device Instance: #{element_data}"
-
     element_data.should_not be_nil
     element_data.should_not be_empty
   end
@@ -363,7 +368,7 @@ describe MachineShop::Rule do
   it "should get all the rules " do
 
     #rules = MachineShop::Rule.new.get_rules(auth_token)
-    rules = MachineShop::Rule.new.get_rules(auth_token)
+    rules = MachineShop::Rule.all({},auth_token)
     #get_rule
     puts "rules haru : #{rules}"
     rules.should_not be_nil
@@ -371,19 +376,85 @@ describe MachineShop::Rule do
 
   end
 
-  it "should get comparison rule_conditions" do
-    rule_conditions = MachineShop::Rule.new.get_comparison_rule_conditions(auth_token)
-    puts "rule comparison  : #{rule_conditions.inspect}"
-    rule_conditions.should_not be_nil
+  create_hash = {
+      :devices=>"52585e1d981800bab2000479",
+      :device_instances=>{},
+      :rule=>{
+          :active=>true,
+          :description=>"bajratest",
+          :condition=>{
+              :type=>"and_rule_condition",
+              :rule_conditions=>{
 
-  end
+                  :property=>"var",
+                  :value=>"30",
+                  :type=>"equal_rule_condition"
 
-  it "should get rule by id" do
-    ruleById = MachineShop::Rule.new.get_rule(auth_token,'52f2807998180070c0000048')
+              }
+          },
+          :then_actions=>{
+              :priority=>"1",
+              :send_to=>"abc@me.com",
+              :type=>"email_rule_action"
+          }
+      }
+  }
+
+  it "should create rule" do
+
+    ruleById = MachineShop::Rule.retrieve(rules[0].id,auth_token)
     puts "rule by id  : #{ruleById}"
     ruleById.should_not be_nil
 
   end
+
+
+
+  it "should get rule by id" do
+    ruleById = MachineShop::Rule.retrieve(rules[0].id,auth_token)
+    puts "rule by id  : #{ruleById}"
+    ruleById.should_not be_nil
+
+  end
+
+
+
+  it "should get get join rule conditions" do
+    test_data = MachineShop::Rule.get_join_rule_conditions(auth_token)
+    puts "rule comparison  : #{test_data.inspect}"
+    test_data.should_not be_nil
+
+  end
+
+
+  it "should get comparison rule_conditions" do
+    test_data = MachineShop::Rule.new.get_comparison_rule_conditions(auth_token)
+    puts "comparison rule condition  : #{test_data.inspect}"
+    test_data.should_not be_nil
+
+  end
+
+
+  it "should get rules deleted" do
+    test_data = MachineShop::Rule.get_by_device_instance(auth_token,'52585e1d981800bab2000478')
+    puts "rule by_device_instance : #{test_data.inspect}"
+    test_data.should_not be_nil
+
+  end
+
+  it "should get deleted rule" do
+    test_data = MachineShop::Rule.get_deleted(auth_token)
+    puts "deleted rule : #{test_data.inspect}"
+    test_data.should_not be_nil
+
+  end
+  it "should get create rule" do
+    test_data = MachineShop::Rule.create({},auth_token)
+    puts "deleted rule : #{test_data.inspect}"
+    test_data.should_not be_nil
+
+  end
+
 
 end
 

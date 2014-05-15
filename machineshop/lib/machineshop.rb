@@ -9,6 +9,11 @@ require 'rest_client'
 require "addressable/uri"
 require 'multi_json'
 
+#configurations
+require 'machineshop/configuration'
+#database
+require 'machineshop/database'
+
 # API operations
 require 'machineshop/api_operations/create'
 require 'machineshop/api_operations/delete'
@@ -43,76 +48,95 @@ module MachineShop
   class << self
     @@api_base_url = 'https://api.machineshop.io/api/v0'
 
-    def api_base_url=(api_base_url)
-      @@api_base_url = api_base_url
+
+#configs starts
+attr_writer :configuration
+
+def configuration
+  @configuration ||= Configuration.new
+end
+
+def configure
+  yield(configuration)
+end
+
+#reset the config object
+def reset
+  Configuration.new
+end
+
+#configs ends
+
+def api_base_url=(api_base_url)
+  @@api_base_url = api_base_url
+end
+
+def api_base_url
+  @@api_base_url
+end
+
+def get(url, auth_token, body_hash=nil)
+  platform_request(url, auth_token, body_hash)
+end
+
+def post(url, auth_token, body_hash)
+  platform_request(url, auth_token, body_hash, :post)
+end
+
+def delete(url, auth_token, body_hash)
+  platform_request(url, auth_token, body_hash, :delete)
+end
+
+def put(url, auth_token, body_hash)
+  platform_request(url, auth_token, body_hash, :put)
+end
+
+def headers(auth_token)
+  header ={:content_type => :json,
+    :accept => :json}
+    header.merge!({ authorization: "Basic " + Base64.encode64(auth_token + ':X') }) if auth_token
+    header
+  end
+
+  def platform_request(url, auth_token, body_hash=nil, http_verb=:get )
+    puts "body_hash is #{body_hash}"
+    opts = nil
+    api_uri = api_base_url + url
+    headers = self.headers(auth_token)
+    if http_verb == :get
+      if (body_hash && !body_hash.empty?)
+        uri = Addressable::URI.new
+        uri.query_values = body_hash
+        api_uri += "?" + uri.query
+      end
+
+      opts = {
+        :method => :get,
+        :url => api_uri,
+        :headers => headers,
+        :open_timeout => 30,
+        :timeout => 80
+      }
+
+    else
+      opts = {
+        :method => http_verb,
+        :url => api_uri,
+        :headers => headers,
+        :open_timeout => 30,
+        :payload => MachineShop::JSON.dump(body_hash),
+        :timeout => 80
+      }
+
     end
 
-    def api_base_url
-      @@api_base_url
-    end
+    puts "request params: #{opts} "
 
-    def get(url, auth_token, body_hash=nil)
-        platform_request(url, auth_token, body_hash)
-      end
-
-      def post(url, auth_token, body_hash)
-        platform_request(url, auth_token, body_hash, :post)
-      end
-
-      def delete(url, auth_token, body_hash)
-        platform_request(url, auth_token, body_hash, :delete)
-      end
-
-      def put(url, auth_token, body_hash)
-        platform_request(url, auth_token, body_hash, :put)
-      end
-
-      def headers(auth_token)
-        header ={:content_type => :json,
-          :accept => :json}
-        header.merge!({ authorization: "Basic " + Base64.encode64(auth_token + ':X') }) if auth_token
-        header
-      end
-
-      def platform_request(url, auth_token, body_hash=nil, http_verb=:get )
-        puts "body_hash is #{body_hash}"
-        opts = nil
-        api_uri = api_base_url + url
-        headers = self.headers(auth_token)
-        if http_verb == :get
-          if (body_hash && !body_hash.empty?)
-            uri = Addressable::URI.new
-            uri.query_values = body_hash
-            api_uri += "?" + uri.query
-          end
-
-          opts = {
-            :method => :get,
-            :url => api_uri,
-            :headers => headers,
-            :open_timeout => 30,
-            :timeout => 80
-          }
-
-        else
-            opts = {
-              :method => http_verb,
-              :url => api_uri,
-              :headers => headers,
-              :open_timeout => 30,
-              :payload => MachineShop::JSON.dump(body_hash),
-              :timeout => 80
-            }
-
-        end
-
-        puts "request params: #{opts} "
-
-          begin
-              response = execute_request(opts)
-            rescue SocketError => e
-              self.handle_restclient_error(e)
-            rescue NoMethodError => e
+    begin
+      response = execute_request(opts)
+    rescue SocketError => e
+      self.handle_restclient_error(e)
+    rescue NoMethodError => e
               # Work around RestClient bug
               if e.message =~ /\WRequestFailed\W/
                 e = APIConnectionError.new('Unexpected HTTP response code')
@@ -146,17 +170,17 @@ module MachineShop
               raise APIError.new("Invalid response object from API: #{rbody.inspect} (HTTP response code was #{rcode})", rcode, rbody)
             end
 
-      end
+          end
 
 
-      def execute_request(opts)
-        RestClient::Request.execute(opts)
-      end
+          def execute_request(opts)
+            RestClient::Request.execute(opts)
+          end
 
-      def handle_api_error(rcode, rbody)
-    begin
-      error_obj = MachineShop::JSON.load(rbody)
-      error_obj = Util.symbolize_names(error_obj)
+          def handle_api_error(rcode, rbody)
+            begin
+              error_obj = MachineShop::JSON.load(rbody)
+              error_obj = Util.symbolize_names(error_obj)
       error = error_obj[:error] or raise MachineShopError.new # escape from parsing
     rescue MultiJson::DecodeError, MachineShopError
       raise APIError.new("Invalid response object from API: #{rbody.inspect} (HTTP response code was #{rcode})", rcode, rbody)
@@ -205,5 +229,5 @@ module MachineShop
 
   
   
-  end
+end
 end

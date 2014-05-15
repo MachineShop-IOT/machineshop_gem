@@ -8,6 +8,46 @@ publisher_username = 'admin@csr.com'
 publisher_password = 'password'
 
 
+
+describe "#expiry_time" do
+  it "default value is 6" do
+    MachineShop::Configuration.new.expiry_time =23
+    # puts "original value is #{MachineShop::Configuration.expiry_time}"
+  end
+end
+
+
+describe "#expiry_time=" do
+  it "can set value" do
+
+    MachineShop.configure do |config|
+      config.expiry_time = 10
+      config.enable_caching = false
+      config.db_username="root"
+      config.db_password="root"
+      config.db_name="machineshop"
+    end
+    config = MachineShop.configuration
+
+    
+    config.expiry_time = 7
+    expect(config.expiry_time).to eq(7)
+    puts config.expiry_time
+  end
+
+  it "stores into database" do
+    # Database.new
+    db = MachineShop::Database.new
+    MachineShop::Database.insert('endpoints',"/user/devices/id2")
+
+
+  end
+end
+
+
+
+=begin
+
 describe "Rubysession" do
   it "should store session " do
     session[:user_id] = "hello"
@@ -556,7 +596,7 @@ describe MachineShop::Customer do
     puts "delete #{delete}"
     delete.http_code.should eq 200
   end
-=end
+
 
 
   it "should update the customer with id " do
@@ -566,3 +606,4 @@ describe MachineShop::Customer do
     puts "update #{update}"
   end
 end
+=end

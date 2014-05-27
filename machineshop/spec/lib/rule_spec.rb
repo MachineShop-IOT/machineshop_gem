@@ -33,26 +33,26 @@ describe MachineShop::Rule do
 
 
  create_hash = {
-      :devices=>"52585e1d981800bab2000479",
-      :device_instances=>{},
+      :devices=>["52585e1d981800bab2000479"],
+      :device_instances=>[],
       :rule=>{
           :active=>true,
           :description=>"bajratest",
           :condition=>{
               :type=>"and_rule_condition",
-              :rule_conditions=>{
+              :rule_conditions=>[{
 
                   :property=>"var",
                   :value=>"30",
                   :type=>"equal_rule_condition"
 
-              }
+              }]
           },
-          :then_actions=>{
+          :then_actions=>[{
               :priority=>"1",
               :send_to=>"abc@me.com",
               :type=>"email_rule_action"
-          }
+          }]
       }
   }
 

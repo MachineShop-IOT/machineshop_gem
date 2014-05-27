@@ -4,7 +4,6 @@ module MachineShop
 
     def self.url()    
       ret = "/platform/data/#{CGI.escape(class_name.underscore)}"
-      puts "Returning url: #{ret}"
       ret
     end
     

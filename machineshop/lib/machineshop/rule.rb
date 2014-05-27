@@ -13,7 +13,7 @@ module MachineShop
     end
 =end
 
-    def platform_url
+    def self.platform_url
       '/platform'
     end
 

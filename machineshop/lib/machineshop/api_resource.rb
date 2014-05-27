@@ -9,7 +9,6 @@ module MachineShop
         raise NotImplementedError.new('APIResource is an abstract class.  You should perform actions on its subclasses (Device, Rule, etc.)')
       end
       ret = "/platform/#{CGI.escape(class_name.underscore)}"
-      puts "Returning url: #{ret}"
       ret
     end
 
@@ -18,7 +17,6 @@ module MachineShop
         raise InvalidRequestError.new("Could not determine which URL to request: #{self.class} instance has invalid ID: #{id.inspect}", 'id')
       end      
       ret = "#{self.class.url}/#{CGI.escape(id)}"
-      puts "Returning here url: #{ret}"
       ret
     end
 

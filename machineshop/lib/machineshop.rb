@@ -43,6 +43,8 @@ require 'machineshop/errors/api_error'
 require 'machineshop/errors/invalid_request_error'
 require 'machineshop/errors/authentication_error'
 
+require 'machineshop/models/people'
+
 
 module MachineShop
   class << self
@@ -137,27 +139,27 @@ def headers(auth_token)
     rescue SocketError => e
       self.handle_restclient_error(e)
     rescue NoMethodError => e
-              # Work around RestClient bug
-              if e.message =~ /\WRequestFailed\W/
-                e = APIConnectionError.new('Unexpected HTTP response code')
-                self.handle_restclient_error(e)
-              else
-                raise
-              end
-            rescue RestClient::ExceptionWithResponse => e
-              if rcode = e.http_code and rbody = e.http_body
-                self.handle_api_error(rcode, rbody)
-              else
-                self.handle_restclient_error(e)
-              end
-            rescue RestClient::Exception, Errno::ECONNREFUSED => e
-              self.handle_restclient_error(e)
-            end
+      # Work around RestClient bug
+      if e.message =~ /\WRequestFailed\W/
+        e = APIConnectionError.new('Unexpected HTTP response code')
+        self.handle_restclient_error(e)
+      else
+        raise
+      end
+    rescue RestClient::ExceptionWithResponse => e
+      if rcode = e.http_code and rbody = e.http_body
+        self.handle_api_error(rcode, rbody)
+      else
+        self.handle_restclient_error(e)
+      end
+    rescue RestClient::Exception, Errno::ECONNREFUSED => e
+      self.handle_restclient_error(e)
+    end
 
-            rbody = response.body
-            rcode = response.code
+    rbody = response.body
+    rcode = response.code
 
-            begin
+    begin
               # Would use :symbolize_names => true, but apparently there is
               # some library out there that makes symbolize_names not work.
               resp = MachineShop::JSON.load(rbody)

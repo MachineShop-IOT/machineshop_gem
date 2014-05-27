@@ -4,11 +4,12 @@ require 'spec_helper'
 MachineShop.api_base_url= 'http://stage.services.machineshop.io/api/v0'
 
 #publisher_username = 'publisher@machineshop.com'
-publisher_username = 'admin@csr.com'
+publisher_username = 'publisher@csr.com'
 publisher_password = 'password'
 
 
 
+=begin
 describe "#expiry_time" do
   it "default value is 6" do
     MachineShop::Configuration.new.expiry_time =23
@@ -32,27 +33,52 @@ describe "#expiry_time=" do
     
     config.expiry_time = 7
     expect(config.expiry_time).to eq(7)
-    puts config.expiry_time
+    puts "config.expiry_time #{config.expiry_time}"
   end
+
+
+auth_token, user = MachineShop::User.authenticate(
+      :email => publisher_username,
+      :password => publisher_password
+  )
+
+db = MachineShop::Database.new
+ it "should get all devices for the user" do
+    element_data = MachineShop::Device.all(
+        {:page => 1,
+         :per_page => 10},
+        auth_token)
+    device = element_data[0]
+    #puts "Devices: #{element_data}"
+    device.should_not be_nil
+    device.should be_kind_of MachineShop::Device
+  end
+
+
+
 
   it "stores into database" do
     # Database.new
     db = MachineShop::Database.new
-    MachineShop::Database.insert('endpoints',"/user/devices/id2")
+    puts "after db =========="
+    puts "db_connected ? #{db.db_connected}"
+
+    if db.db_connected
+
+      MachineShop::Database.insert('2343','endpoints',"/user/devices/id23")
+      
+    end
 
 
   end
 end
+=end
 
-
-
-=begin
-
-describe "Rubysession" do
-  it "should store session " do
-    session[:user_id] = "hello"
-  end
-end
+# describe "Rubysession" do
+#   it "should store session " do
+#     session[:user_id] = "hello"
+#   end
+# end
 
 describe MachineShop::User do
   auth_token = nil
@@ -219,18 +245,11 @@ describe MachineShop::DeviceInstance do
     device_instance.should be_kind_of MachineShop::DeviceInstance
   end
 
-  it "should get a device instance for a device" do
-    element_data = device.instances
 
-    #puts "Device Instances: #{element_data}"
-    element_data.should_not be_nil
-    element_data.should_not be_empty
-  end
-
-  it "should get all device instances" do
+  it "should get device instances" do
     element_data = MachineShop::DeviceInstance.all({}, auth_token)
 
-    #puts "Device Instances: #{element_data}"
+    puts "Device Instances: #{element_data}"
 
     device_instance = element_data[0]
     element_data.should_not be_nil
@@ -242,7 +261,7 @@ describe MachineShop::DeviceInstance do
   it "should get a device instance by id" do
     element_data = MachineShop::DeviceInstance.retrieve(device_instance.id, auth_token)
 
-    #puts "Device Instance: #{element_data}"
+    puts "Device Instance by id: #{element_data}"
 
     element_data.should_not be_nil
     element_data.should be_kind_of MachineShop::DeviceInstance
@@ -251,7 +270,7 @@ describe MachineShop::DeviceInstance do
   it "should get a device instance by name" do
     element_data = MachineShop::DeviceInstance.all({:name => device_instance.name}, auth_token)
 
-    #puts "Device Instance: #{element_data}"
+    puts "Device Instance by name: #{element_data}"
 
     element_data.should_not be_nil
     element_data.should_not be_empty
@@ -583,7 +602,7 @@ describe MachineShop::Customer do
   end
 
 
-=begin
+
   #success test
 
   it "should delete customer with id " do
@@ -606,4 +625,4 @@ describe MachineShop::Customer do
     puts "update #{update}"
   end
 end
-=end
+

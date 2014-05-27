@@ -18,7 +18,7 @@ module MachineShop
         raise InvalidRequestError.new("Could not determine which URL to request: #{self.class} instance has invalid ID: #{id.inspect}", 'id')
       end      
       ret = "#{self.class.url}/#{CGI.escape(id)}"
-      puts "Returning url: #{ret}"
+      puts "Returning here url: #{ret}"
       ret
     end
 

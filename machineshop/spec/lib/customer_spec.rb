@@ -1,4 +1,5 @@
 require_relative '../spec_helper'
+require "awesome_print"
 
 #MachineShop.api_base_url= 'http://machineshop.dev:3000/api/v0'
 MachineShop.api_base_url= 'http://stage.services.machineshop.io/api/v0'
@@ -14,8 +15,6 @@ publisher_password = 'password'
   )
 describe MachineShop::Customer do
 
-  customers = nil
-
   it "should get all the customers " do
     customers = MachineShop::Customer.all({}, auth_token)
 
@@ -26,10 +25,10 @@ describe MachineShop::Customer do
     customers.should_not be_nil
   end
 
-
+   specificCustomer = nil
   it "should create customer " do
 
-    customer = MachineShop::Customer.create({:email=>"testvhfbs@bajratechnologies.com",
+    specificCustomer = MachineShop::Customer.create({:email=>"testvhfbs@bajratechnologies.com",
                                              :password=>'password',
                                              :notification_method=>'sms',
                                              :first_name=>'niroj',:last_name=>'sapkota',
@@ -37,40 +36,41 @@ describe MachineShop::Customer do
                                              :company_name=>'technology co'
 
                                             },auth_token)
-    puts "created customer is #{customer}"
-    customer.should_not be_nil
-  end
-
-
-  specificCustomer = nil
-  it "should get customer by customer id " do
-
-    specificCustomer = MachineShop::Customer.retrieve(customers[0].id, auth_token)
-    puts "customer id- #{customers[0].id}  is  #{specificCustomer}"
+    puts "created customer is #{specificCustomer}"
     specificCustomer.should_not be_nil
   end
 
 
+ 
+  it "should get customer by customer id " do
+    ap "looking up customer before:"
+    ap specificCustomer.as_json
+    
+    specificCustomer = MachineShop::Customer.retrieve(specificCustomer.id, auth_token)
+    
+    ap "looking up customer after:"
+    ap specificCustomer.as_json
+    
+    specificCustomer.should_not be_nil
+  end
 
+  it "should update the customer with id " do
+
+    puts "updating customer with id : #{specificCustomer.id}"
+    update = MachineShop::Customer.update(specificCustomer.id,auth_token,{:notification_method => 'email'})
+    puts "update #{update}"
+  end
+  
   #success test
 
   it "should delete customer with id " do
 
     #puts
-    puts "deleting customer with id : #{customers[0].id}"
+    puts "deleting customer with id : #{specificCustomer.id}"
 
     delete = specificCustomer.delete
     #delete = MachineShop::Customer.delete(customers[0].id,auth_token)
     puts "delete #{delete}"
     delete.http_code.should eq 200
-  end
-
-
-
-  it "should update the customer with id " do
-
-    puts "updating customer with id : #{customers[0].id}"
-    update = MachineShop::Customer.update(customers[0].id,auth_token,{:notification_method => 'email'})
-    puts "update #{update}"
   end
 end

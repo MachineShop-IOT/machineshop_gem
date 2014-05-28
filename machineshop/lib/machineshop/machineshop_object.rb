@@ -15,7 +15,7 @@ module MachineShop
       if id.kind_of?(Hash)
         @retrieve_options = id.dup
         @retrieve_options.delete(:id)
-        id = id[:id]
+        id = id[:id] ? id[:id] : id[:_id]
       else
         @retrieve_options = {}
       end
@@ -46,9 +46,10 @@ module MachineShop
     end
 
     def refresh_from(values, auth_token, partial=false)
+      values[:id] = values[:_id] if values[:_id]
       @auth_token = auth_token
       case values
-      when Array
+      when Array        
         values = values[0]
       else
 #do nothing

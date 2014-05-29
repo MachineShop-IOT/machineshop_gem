@@ -2,6 +2,7 @@ module MachineShop
   class Device < APIResource
     include MachineShop::APIOperations::List
     include MachineShop::APIOperations::Create
+    include MachineShop::APIOperations::Delete
 
     # Specific API calls
     def payload_fields(params=nil)

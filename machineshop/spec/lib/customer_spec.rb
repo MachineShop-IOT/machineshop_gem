@@ -1,5 +1,5 @@
 require_relative '../spec_helper'
-require "awesome_print"
+
 
 #MachineShop.api_base_url= 'http://machineshop.dev:3000/api/v0'
 MachineShop.api_base_url= 'http://stage.services.machineshop.io/api/v0'
@@ -28,7 +28,7 @@ describe MachineShop::Customer do
    specificCustomer = nil
   it "should create customer " do
 
-    specificCustomer = MachineShop::Customer.create({:email=>"testvhfbs@bajratechnologies.com",
+    specificCustomer = MachineShop::Customer.create({:email=>"bajratests@bajratechnologies.com",
                                              :password=>'password',
                                              :notification_method=>'sms',
                                              :first_name=>'niroj',:last_name=>'sapkota',

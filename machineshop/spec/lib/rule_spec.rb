@@ -61,12 +61,24 @@ describe MachineShop::Rule do
     createdRule.should_not be_nil
 
   end
+
+  specificRule = nil
  
   it "should get rule by id" do
     # ruleById = MachineShop::Rule.retrieve(rules[0].id,auth_token)
-    ruleById = MachineShop::Rule.retrieve("5332c3e2385f7f7ed800001d",auth_token)
-    # puts "rule by id  : #{ruleById}"
-    ruleById.should_not be_nil
+    specificRule = MachineShop::Rule.retrieve("53857b5e385f7fd509000019",auth_token)
+    ap "retrieved rule"
+    ap specificRule.as_json
+    specificRule.should_not be_nil
+
+  end
+
+  it "should delete rule by" do
+    # ruleById = MachineShop::Rule.retrieve(rules[0].id,auth_token)
+    delete = specificRule.delete
+    ap "Deleted rule"
+    ap delete.as_json
+    delete.should_not be_nil
 
   end
 
@@ -80,7 +92,8 @@ describe MachineShop::Rule do
 
   it "should get comparison rule_conditions" do
     test_data = MachineShop::Rule.get_comparison_rule_conditions(auth_token)
-    puts "comparison rule condition  : #{test_data.inspect}"
+    ap "comparison rule condition  :"
+    ap test_data.as_json
     test_data.should_not be_nil
 
   end
@@ -88,7 +101,8 @@ describe MachineShop::Rule do
 
   it "should get rule by device_id" do
     test_data = MachineShop::Rule.get_by_device_instance(auth_token,'52585e1d981800bab2000478')
-    puts "rule by_device_instance : #{test_data.inspect}"
+    ap "rule by_device_instance :"
+    ap test_data.as_json
     test_data.should_not be_nil
 
   end

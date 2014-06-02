@@ -6,15 +6,11 @@ module MachineShop
 
     # Specific API calls
     def payload_fields(params=nil)
-      #puts "inside payload_fields"
       MachineShop.get(payload_fields_url, @auth_token, params)
     end
 
     def create_instance(params)
       params.merge!({:device_id => self.id})
-      #puts "Niroj ko debug : #{self.created_at}"
-      #from test , self contains -> device object
-      #puts "params: #{params}"
       DeviceInstance.create(params, @auth_token)
     end
 

@@ -15,20 +15,3 @@ module MachineShop
     end
   end
 end
-=begin
-
-
-module MachineShop
-  module APIOperations
-    module Update
-      def self.update(param={})
-        #puts "inside mach update with param : #{param}"
-        puts "self has : #{self.inspect}"
-        #response = MachineShop.update(url, @auth_token,params)
-        #refresh_from(response, @auth_token)
-        self
-      end
-    end
-  end
-end
-=end

@@ -35,7 +35,7 @@ module MachineShop
     end
 
     def self.get_deleted(auth_token)
-      url = platform_url + "/rule/deleted"
+      url = platform_url + "/rules/deleted"
       MachineShop.get(url, auth_token)
     end
 

@@ -5,14 +5,13 @@ require 'set'
 require 'openssl'
 require 'rest_client'
 require "base64"
-require 'rest_client'
 require "addressable/uri"
 require 'multi_json'
 
 #configurations
 require 'machineshop/configuration'
 #database
-require 'machineshop/database'
+# require 'machineshop/database'
 
 # API operations
 require 'machineshop/api_operations/create'
@@ -43,13 +42,13 @@ require 'machineshop/errors/api_error'
 require 'machineshop/errors/invalid_request_error'
 require 'machineshop/errors/authentication_error'
 
-require 'machineshop/models/people'
+# require 'machineshop/models/people'
 
 
 module MachineShop
   class << self
-    @@api_base_url = 'https://api.machineshop.io/api/v0'
-
+    # @@api_base_url = 'http://api.machineshop.io/api/v0'
+    @@api_base_url = 'http://stage.services.machineshop.io/api/v0'
 
 #configs starts
 attr_writer :configuration
@@ -101,7 +100,7 @@ def headers(auth_token)
   end
 
   def platform_request(url, auth_token, body_hash=nil, http_verb=:get )
-    puts "body_hash is #{body_hash}"
+    puts "body_hash: #{body_hash}"
     opts = nil
     api_uri = api_base_url + url
     headers = self.headers(auth_token)
@@ -213,7 +212,6 @@ def headers(auth_token)
   end
 
   def handle_restclient_error(e)
-    puts "here ? #{e}"
     case e
     when RestClient::ServerBrokeConnection, RestClient::RequestTimeout
       message = "Could not connect to MachineShop (#{@@api_base_url}).  Please check your internet connection and try again.  If this problem persists, you should check MachineShop's service status."
@@ -225,7 +223,7 @@ def headers(auth_token)
       message = "Unexpected error communicating with MachineShop"
     end
     message += "\n\n(Network error: #{e.message})"
-    puts "error message string : #{message}"
+    # puts "error message string : #{message}"
     raise APIConnectionError.new(message)
   end
 

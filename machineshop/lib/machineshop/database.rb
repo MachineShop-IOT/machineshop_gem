@@ -1,4 +1,5 @@
 module MachineShop
+=begin
 
   require 'machineshop/errors/machineshop_error'
   require 'machineshop/errors/api_error'
@@ -103,5 +104,9 @@ puts "inserted #{@rs.inspect}"
 end
 
 end
+=end
+
+end
+
 # Database.new
 # Database.insert('endpoints',"/user/devices/id")

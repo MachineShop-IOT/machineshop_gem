@@ -1,11 +1,11 @@
 module MachineShop
-require 'active_record'
+# require 'active_record'
 
-require 'machineshop/database'
+# require 'machineshop/database'
 
-Database.new
+# Database.new
 
-class People < ActiveRecord::Base
-end
+class People
+# end
 
 end

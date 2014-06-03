@@ -41,6 +41,7 @@ require 'machineshop/errors/machineshop_error'
 require 'machineshop/errors/api_error'
 require 'machineshop/errors/invalid_request_error'
 require 'machineshop/errors/authentication_error'
+require 'machineshop/errors/api_connection_error'
 
 # require 'machineshop/models/people'
 

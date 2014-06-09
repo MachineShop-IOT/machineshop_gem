@@ -22,6 +22,9 @@ describe MachineShop::Device do
         {:page => 1,
          :per_page => 10},
         auth_token)
+
+    ap "listing all devices"
+    puts element_data
     device = element_data[0]
     device.should_not be_nil
     device.should be_kind_of MachineShop::Device
@@ -61,30 +64,6 @@ specificDevice = nil
     element_data.should_not be_empty
   end
 
-
-  device = nil
-
-  it "should get all devices for the user" do
-    element_data = MachineShop::Device.all(
-        {:page => 1,
-         :per_page => 10},
-        auth_token)
-    device = element_data[0]
-    device.should_not be_nil
-    device.should be_kind_of MachineShop::Device
-  end
-
-  it "should get a device for the user by name" do
-    element_data = MachineShop::Device.all(
-        {
-            :name => device.name
-        },
-        auth_token)
-
-    element_data.should_not be_nil
-    element_data.should_not be_empty
-  end
-
 end
 
 describe MachineShop::DeviceInstance do
@@ -92,7 +71,7 @@ describe MachineShop::DeviceInstance do
   device = nil
   device_instance = nil
 
-  it "should create a device instance for the user" do
+  it "should create a device for the user" do
     # First create a device to use
     device = MachineShop::Device.create(
         {
@@ -123,6 +102,9 @@ describe MachineShop::DeviceInstance do
         }
     )
 
+    ap "creating device instance"
+    ap device_instance.as_json
+
     device_instance.should_not be_nil
     device_instance.should be_kind_of MachineShop::DeviceInstance
   end
@@ -130,6 +112,10 @@ describe MachineShop::DeviceInstance do
 
   it "should get device instances" do
     element_data = MachineShop::DeviceInstance.all({}, auth_token)
+
+    ap "getting all device instances"
+
+    ap device_instance.as_json
 
     device_instance = element_data[0]
     element_data.should_not be_nil

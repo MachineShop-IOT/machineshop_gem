@@ -31,6 +31,8 @@ describe MachineShop::User do
 
     ap "all_roles: "
     ap element_data.as_json
+    puts element_data
+
     element_data.should_not be_nil
   end
 
@@ -44,6 +46,9 @@ describe MachineShop::User do
 
   it "should get a user for the user by id" do
     element_data = MachineShop::User.retrieve(user.id, auth_token)
+
+    ap "user retrieve"
+    ap element_data.as_json
 
     element_data.should_not be_nil
     element_data.should be_kind_of MachineShop::User

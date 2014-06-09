@@ -4,7 +4,7 @@ require_relative '../spec_helper'
 MachineShop.api_base_url= 'http://stage.services.machineshop.io/api/v0'
 
 #publisher_username = 'publisher@machineshop.com'
-publisher_username = 'publisher@csr.com'
+publisher_username = 'admin@csr.com'
 publisher_password = 'password'
 
 
@@ -21,6 +21,9 @@ describe MachineShop::Rule do
   it "should get all the rules " do
     rules = MachineShop::Rule.all({},auth_token)
     # puts "rules haru : #{rules}"
+    ap "getting rules"
+    puts rules
+    ap rules.as_json
     rules.should_not be_nil
 
 
@@ -56,7 +59,10 @@ describe MachineShop::Rule do
       }
   }
 
+    ap "creating rule "
     createdRule = MachineShop::Rule.create(create_hash,auth_token)
+
+ap createdRule.as_json
 
     createdRule.should_not be_nil
 
@@ -66,7 +72,7 @@ describe MachineShop::Rule do
  
   it "should get rule by id" do
     # ruleById = MachineShop::Rule.retrieve(rules[0].id,auth_token)
-    specificRule = MachineShop::Rule.retrieve("53857b5e385f7fd509000019",auth_token)
+    specificRule = MachineShop::Rule.retrieve("5395b4829818008e790000f9",auth_token)
     ap "retrieved rule"
     ap specificRule.as_json
     specificRule.should_not be_nil
@@ -94,6 +100,7 @@ describe MachineShop::Rule do
     test_data = MachineShop::Rule.get_comparison_rule_conditions(auth_token)
     ap "comparison rule condition  :"
     ap test_data.as_json
+    puts test_data
     test_data.should_not be_nil
 
   end
@@ -102,6 +109,7 @@ describe MachineShop::Rule do
   it "should get rule by device_id" do
     test_data = MachineShop::Rule.get_by_device_instance(auth_token,'52585e1d981800bab2000478')
     ap "rule by_device_instance :"
+    puts test_data
     ap test_data.as_json
     test_data.should_not be_nil
 

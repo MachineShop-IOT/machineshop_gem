@@ -5,7 +5,7 @@ require_relative '../spec_helper'
 MachineShop.api_base_url= 'http://stage.services.machineshop.io/api/v0'
 
 #publisher_username = 'publisher@machineshop.com'
-publisher_username = 'publisher@csr.com'
+publisher_username = 'admin@csr.com'
 publisher_password = 'password'
 
 
@@ -36,29 +36,40 @@ describe MachineShop::Customer do
                                              :company_name=>'technology co'
 
                                             },auth_token)
-    puts "created customer is #{specificCustomer}"
+
+    ap "created customer is"
+    ap specificCustomer.as_json
     specificCustomer.should_not be_nil
   end
 
 
- 
+ retrieved_cust=nil
   it "should get customer by customer id " do
     ap "looking up customer before:"
     ap specificCustomer.as_json
     
-    specificCustomer = MachineShop::Customer.retrieve(specificCustomer.id, auth_token)
+    retrieved_cust = MachineShop::Customer.retrieve(specificCustomer.id, auth_token)
     
     ap "looking up customer after:"
-    ap specificCustomer.as_json
+    ap retrieved_cust.as_json
     
-    specificCustomer.should_not be_nil
+    retrieved_cust.should_not be_nil
   end
+
 
   it "should update the customer with id " do
 
-    puts "updating customer with id : #{specificCustomer.id}"
-    update = MachineShop::Customer.update(specificCustomer.id,auth_token,{:notification_method => 'email'})
-    puts "update #{update}"
+    ap "updating customer with id : #{specificCustomer.id}"
+    update = MachineShop::Customer.update(specificCustomer.id,auth_token,{:notification_method => 'email',:first_name=>'testJohn'})
+    ap update.as_json
+  end
+
+
+  it "should update the customer from the retrieved obj id " do
+    ap "updating customer from the retrieved obj id : #{specificCustomer.id}"
+
+    update = retrieved_cust.update({:notification_method => 'email'})
+    ap update.as_json
   end
   
   #success test

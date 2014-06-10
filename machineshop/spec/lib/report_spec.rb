@@ -19,7 +19,7 @@ describe MachineShop::Report do
     it "should get all report data" do
     element_data = MachineShop::Report.all({}, auth_token)
 reports=element_data
-    # puts "element_data: #{element_data}"
+    puts "element_data: #{element_data}"
 
     element_data.should_not be_nil
     element_data.should_not be_empty

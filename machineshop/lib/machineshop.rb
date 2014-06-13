@@ -1,5 +1,6 @@
 require "machineshop/version"
 
+require 'awesome_print'
 require 'cgi'
 require 'set'
 require 'openssl'
@@ -11,7 +12,7 @@ require 'multi_json'
 #configurations
 require 'machineshop/configuration'
 #database
-# require 'machineshop/database'
+require 'machineshop/database'
 
 # API operations
 require 'machineshop/api_operations/create'
@@ -43,7 +44,9 @@ require 'machineshop/errors/invalid_request_error'
 require 'machineshop/errors/authentication_error'
 require 'machineshop/errors/api_connection_error'
 
+#Models
 # require 'machineshop/models/people'
+# require 'machineshop/models/device_cache'
 
 
 module MachineShop
@@ -101,6 +104,13 @@ module MachineShop
     end
 
     def platform_request(url, auth_token, body_hash=nil, http_verb=:get )
+      if http_verb==:get
+
+        # getFromCache(url,body_hash)
+
+      end
+
+
       puts "body_hash: #{body_hash}"
       opts = nil
       api_uri = api_base_url + url
@@ -166,6 +176,8 @@ module MachineShop
         resp ||= {}
         resp = Util.symbolize_names(resp)
 
+        saveIntoCache(url,resp)
+
         resp.merge!({:http_code => rcode}) if resp.is_a?(Hash)
         return resp
       rescue MultiJson::DecodeError
@@ -226,6 +238,136 @@ module MachineShop
       message += "\n\n(Network error: #{e.message})"
       # puts "error message string : #{message}"
       raise APIConnectionError.new(message)
+    end
+
+
+    #Check if the class with the variable exists
+    # def class_exists?(class_name)
+    #   klass = class_name.constantize
+    #   return klass.is_a?(Class)
+    # rescue NameError =>e
+    #   puts "rescue ma gayo #{e.message}"
+    #   return false
+    # end
+
+
+    #get the classname from url and get the record if exists
+
+
+    def saveIntoCache(url, data)
+      puts "inside saveIntoCache"
+      id=nil
+      splitted = url.split('/')
+      klass = splitted[-1]
+
+      if /[0-9]/.match(klass)
+        klass = splitted[-2]
+        id=splitted[-1]
+      end
+      klass = klass.capitalize+"Cache"
+      puts "&&&&&&&& creating dynamic class #{klass} &&&&&&&&&&&"
+      modelClass = Object.const_set klass, Class.new(ActiveRecord::Base)
+      db = MachineShop::Database.new
+      # puts ActiveRecord::Base.connection.tables
+
+      if ActiveRecord::Base.connection.table_exists? CGI.escape(klass.pluralize.underscore)
+        puts "db table #{klass.pluralize.underscore} exists"
+        #     data = {
+        #     :_id=> "53994d3e981800cbcc0001b8",
+        #     :active=> true,
+        #     :created_at=> "2014-06-12T06:48:30Z",
+        #     :deleted_at=> null,
+        #     :exe_path=> "/etc/foo",
+        #     :image_url=> "http://someurl.com/your_image.png",
+        #     :init_cmd=> "my_init_cmd",
+        #     :init_params=> "{'init':'go'}",
+        #     :long_description=> "This device tracks position and NCAA football conference.",
+        #     :name=> "my_device"
+        # }
+
+        puts modelClass.all.as_json
+
+        # ap "yaha data esto aayo "
+        # ap data.as_json
+
+        data.each do |data_arr|
+          if data_arr
+            data_arr.each do |k,v|
+              @model = modelClass.create
+
+              val=nil
+
+              case v
+              when Array
+                val = JSON::parse(v)
+                # puts "#{k} => #{v} "
+              else
+                val =v
+              end
+
+ap "valueeeee"
+ap k
+ap val
+              @model.k=val
+            end
+
+
+            @model.save
+
+
+          end
+
+        end
+
+
+        @model = modelClass.new _id: "53994d3e981800cbcc0001b8", active: "Burgess", exe_path: 22
+        # @model = modelClass.new(data)
+        @model.save
+
+
+      end
+    end
+
+
+    def getFromCache(url, body_hash)
+      id=nil
+      splitted = url.split('/')
+      klass = splitted[-1]
+
+      if /[0-9]/.match(klass)
+        klass = splitted[-2]
+        id=splitted[-1]
+        #the last item is id ,then take -2
+      end
+      klass = klass.capitalize+"Cache"
+      # now create the model class dynamically for the same
+      puts "&&&&&&&& creating dynamic class #{klass} &&&&&&&&&&&"
+      modelClass = Object.const_set klass, Class.new(ActiveRecord::Base)
+      db = MachineShop::Database.new
+      # puts ActiveRecord::Base.connection.tables
+
+      if ActiveRecord::Base.connection.table_exists? CGI.escape(klass.pluralize.underscore)
+        puts "yessss #{klass.pluralize} exists"
+        if id
+          modelClass.find(id)
+        else
+          puts modelClass.all.as_json
+        end
+      end
+
+
+      # Users.where(:name => "Test_name").limit(10)
+
+      # if class_exists?(klass)
+      #   # db = MachineShop::Database.new
+      #   #initialize database
+      #   puts "yessssss madal "
+      #   if id
+      #     klass.constantize.find(id)
+      #   else
+      #     puts klass.constantize.all.as_json
+      #   end
+      # end
     end
 
 

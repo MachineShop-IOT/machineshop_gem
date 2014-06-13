@@ -5,7 +5,7 @@
 	# Database.new
 	# module MachineShop
 
-	class People < ActiveRecord::Base
+	class DeviceCache < ActiveRecord::Base
 		# end
 
 	end

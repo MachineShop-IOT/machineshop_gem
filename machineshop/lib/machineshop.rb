@@ -106,7 +106,7 @@ module MachineShop
     def platform_request(url, auth_token, body_hash=nil, http_verb=:get )
       if http_verb==:get
 
-        # getFromCache(url,body_hash)
+        getFromCache(url,body_hash)
 
       end
 
@@ -167,16 +167,22 @@ module MachineShop
       end
 
       rbody = response.body
+      ap "rbody"
       rcode = response.code
+      ap rbody
+      ap "rcode"
+      ap rcode
 
       begin
         # Would use :symbolize_names => true, but apparently there is
         # some library out there that makes symbolize_names not work.
         resp = MachineShop::JSON.load(rbody)
+        ap "after jsonify"
+        ap resp
         resp ||= {}
         resp = Util.symbolize_names(resp)
 
-        saveIntoCache(url,resp)
+        # saveIntoCache(url,resp)
 
         resp.merge!({:http_code => rcode}) if resp.is_a?(Hash)
         return resp
@@ -255,7 +261,6 @@ module MachineShop
 
 
     def saveIntoCache(url, data)
-      puts "inside saveIntoCache"
       id=nil
       splitted = url.split('/')
       klass = splitted[-1]
@@ -267,69 +272,36 @@ module MachineShop
       klass = klass.capitalize+"Cache"
       puts "&&&&&&&& creating dynamic class #{klass} &&&&&&&&&&&"
       modelClass = Object.const_set klass, Class.new(ActiveRecord::Base)
-      db = MachineShop::Database.new
-      # puts ActiveRecord::Base.connection.tables
 
+      modelClass.inheritance_column = :_type_disabled
+      #Because 'type' is reserved for storing the class in case of inheritance and our array has "TYPE" key
+      db = MachineShop::Database.new
       if ActiveRecord::Base.connection.table_exists? CGI.escape(klass.pluralize.underscore)
         puts "db table #{klass.pluralize.underscore} exists"
-        #     data = {
-        #     :_id=> "53994d3e981800cbcc0001b8",
-        #     :active=> true,
-        #     :created_at=> "2014-06-12T06:48:30Z",
-        #     :deleted_at=> null,
-        #     :exe_path=> "/etc/foo",
-        #     :image_url=> "http://someurl.com/your_image.png",
-        #     :init_cmd=> "my_init_cmd",
-        #     :init_params=> "{'init':'go'}",
-        #     :long_description=> "This device tracks position and NCAA football conference.",
-        #     :name=> "my_device"
-        # }
-
-        puts modelClass.all.as_json
-
-        # ap "yaha data esto aayo "
-        # ap data.as_json
 
         data.each do |data_arr|
           if data_arr
+            @activeObject = modelClass.find_by(_id: data_arr[:_id]) || modelClass.new
             data_arr.each do |k,v|
-              @model = modelClass.create
-
               val=nil
-
               case v
               when Array
-                val = JSON::parse(v)
-                # puts "#{k} => #{v} "
+                val = v.map { |o| Hash[o.each_pair.to_a] }.to_json
               else
                 val =v
               end
-
-ap "valueeeee"
-ap k
-ap val
-              @model.k=val
+              @activeObject.send("#{k}=",val)
             end
-
-
-            @model.save
-
-
+            @activeObject.save
           end
 
         end
-
-
-        @model = modelClass.new _id: "53994d3e981800cbcc0001b8", active: "Burgess", exe_path: 22
-        # @model = modelClass.new(data)
-        @model.save
-
-
       end
     end
 
 
     def getFromCache(url, body_hash)
+      puts "inside getFromCache"
       id=nil
       splitted = url.split('/')
       klass = splitted[-1]
@@ -343,15 +315,29 @@ ap val
       # now create the model class dynamically for the same
       puts "&&&&&&&& creating dynamic class #{klass} &&&&&&&&&&&"
       modelClass = Object.const_set klass, Class.new(ActiveRecord::Base)
+      modelClass.inheritance_column = :_type_disabled
       db = MachineShop::Database.new
       # puts ActiveRecord::Base.connection.tables
 
+      # id="539eb727385f7fcc7000002b"
       if ActiveRecord::Base.connection.table_exists? CGI.escape(klass.pluralize.underscore)
         puts "yessss #{klass.pluralize} exists"
+        resp= nil
         if id
-          modelClass.find(id)
+          # puts "ahhha yaha po "
+          resp = modelClass.find_by(_id: id)
         else
-          puts modelClass.all.as_json
+          resp = modelClass.all
+        end
+
+        result = {}
+
+        if resp
+          resp.each do |res|
+            ap res
+            # result << MachineShop::JSON.load(res)
+          end
+          # ap result
         end
       end
 

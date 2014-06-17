@@ -1,6 +1,8 @@
 require "machineshop/version"
 
 require 'awesome_print'
+require 'will_paginate'
+
 require 'cgi'
 require 'set'
 require 'openssl'
@@ -106,79 +108,88 @@ module MachineShop
     def platform_request(url, auth_token, body_hash=nil, http_verb=:get )
       if http_verb==:get
 
-        getFromCache(url,body_hash)
+        rbody = getFromCache(url,body_hash)
+        # rbody = nil
+        rcode="202"
 
       end
 
+      if !rbody
 
-      puts "body_hash: #{body_hash}"
-      opts = nil
-      api_uri = api_base_url + url
-      headers = self.headers(auth_token)
-      if http_verb == :get
-        if (body_hash && !body_hash.empty?)
-          uri = Addressable::URI.new
-          uri.query_values = body_hash
-          api_uri += "?" + uri.query
-        end
+        ap "body_hash: #{body_hash}"
+        opts = nil
+        api_uri = api_base_url + url
+        headers = self.headers(auth_token)
+        if http_verb == :get
+          if (body_hash && !body_hash.empty?)
+            uri = Addressable::URI.new
+            uri.query_values = body_hash
+            api_uri += "?" + uri.query
+          end
 
-        opts = {
-          :method => :get,
-          :url => api_uri,
-          :headers => headers,
-          :open_timeout => 30,
-          :timeout => 80
-        }
+          opts = {
+            :method => :get,
+            :url => api_uri,
+            :headers => headers,
+            :open_timeout => 30,
+            :timeout => 80
+          }
 
-      else
-        opts = {
-          :method => http_verb,
-          :url => api_uri,
-          :headers => headers,
-          :open_timeout => 30,
-          :payload => MachineShop::JSON.dump(body_hash),
-          :timeout => 80
-        }
-
-      end
-
-      puts "request params: #{opts} "
-
-      begin
-        response = execute_request(opts)
-      rescue SocketError => e
-        self.handle_restclient_error(e)
-      rescue NoMethodError => e
-        # Work around RestClient bug
-        if e.message =~ /\WRequestFailed\W/
-          e = APIConnectionError.new('Unexpected HTTP response code')
-          self.handle_restclient_error(e)
         else
-          raise
+          opts = {
+            :method => http_verb,
+            :url => api_uri,
+            :headers => headers,
+            :open_timeout => 30,
+            :payload => MachineShop::JSON.dump(body_hash),
+            :timeout => 80
+          }
+
         end
-      rescue RestClient::ExceptionWithResponse => e
-        if rcode = e.http_code and rbody = e.http_body
-          self.handle_api_error(rcode, rbody)
-        else
+
+        puts "request params: #{opts} "
+
+
+
+        begin
+          response = execute_request(opts)
+        rescue SocketError => e
+          self.handle_restclient_error(e)
+        rescue NoMethodError => e
+          # Work around RestClient bug
+          if e.message =~ /\WRequestFailed\W/
+            e = APIConnectionError.new('Unexpected HTTP response code')
+            self.handle_restclient_error(e)
+          else
+            raise
+          end
+        rescue RestClient::ExceptionWithResponse => e
+          if rcode = e.http_code and rbody = e.http_body
+            self.handle_api_error(rcode, rbody)
+          else
+            self.handle_restclient_error(e)
+          end
+        rescue RestClient::Exception, Errno::ECONNREFUSED => e
           self.handle_restclient_error(e)
         end
-      rescue RestClient::Exception, Errno::ECONNREFUSED => e
-        self.handle_restclient_error(e)
+
+        rbody = response.body
+        # puts rbody
+        rcode = response.code
+        # ap rbody-
+        # ap "rcode"
+        # ap rcode
       end
 
-      rbody = response.body
-      ap "rbody"
-      rcode = response.code
-      ap rbody
-      ap "rcode"
-      ap rcode
+
+
 
       begin
         # Would use :symbolize_names => true, but apparently there is
         # some library out there that makes symbolize_names not work.
         resp = MachineShop::JSON.load(rbody)
-        ap "after jsonify"
-        ap resp
+        # ap "after jsonify"
+        # ap resp
         resp ||= {}
         resp = Util.symbolize_names(resp)
 
@@ -301,7 +312,10 @@ module MachineShop
 
 
     def getFromCache(url, body_hash)
-      puts "inside getFromCache"
+      ap "inside getFromCache"
+
+      ap "filter parameters"
+      ap body_hash
       id=nil
       splitted = url.split('/')
       klass = splitted[-1]
@@ -312,14 +326,10 @@ module MachineShop
         #the last item is id ,then take -2
       end
       klass = klass.capitalize+"Cache"
-      # now create the model class dynamically for the same
-      puts "&&&&&&&& creating dynamic class #{klass} &&&&&&&&&&&"
       modelClass = Object.const_set klass, Class.new(ActiveRecord::Base)
       modelClass.inheritance_column = :_type_disabled
       db = MachineShop::Database.new
       # puts ActiveRecord::Base.connection.tables
-
-      # id="539eb727385f7fcc7000002b"
       if ActiveRecord::Base.connection.table_exists? CGI.escape(klass.pluralize.underscore)
         puts "yessss #{klass.pluralize} exists"
         resp= nil
@@ -327,35 +337,80 @@ module MachineShop
           # puts "ahhha yaha po "
           resp = modelClass.find_by(_id: id)
         else
-          resp = modelClass.all
+          pagination = body_hash.select{|k| k==:per_page || k==:page}
+          puts "my pagination "
+          puts pagination
+          resp = modelClass.all.where(parse_query_string body_hash).paginate(:per_page=>20,:page=>1)
         end
-
-        result = {}
-
-        if resp
-          resp.each do |res|
-            ap res
-            # result << MachineShop::JSON.load(res)
-          end
-          # ap result
-        end
+        result = []
+        # ap "MADAAL CHOR starts "
+        result = resp.to_json(:except=>[:id])
+        # includes ? resp.to_json : resp.to_json
+        puts result
+        # ap "MADAAL CHOR ends "
+        return result
       end
-
-
-      # Users.where(:name => "Test_name").limit(10)
-
-      # if class_exists?(klass)
-      #   # db = MachineShop::Database.new
-      #   #initialize database
-      #   puts "yessssss madal "
-      #   if id
-      #     klass.constantize.find(id)
-      #   else
-      #     puts klass.constantize.all.as_json
-      #   end
-      # end
     end
 
+    QUERY_STRING_BLACKLIST = [
+      'page',
+      'per_page'
+    ]
+
+    #TODO (JC) - document this method
+    def parse_query_string(query_params)
+
+      # newParams = params.collect {|k,v| k.to_s=>v}
+
+      params = Hash[query_params.map{ |k, v| [k.to_s, v] }]
+
+
+
+      # ap "new prrrr"
+      # puts newParams
+
+
+
+      # ap "inside parse_query_string"
+
+      # params = params.to_a if params.is_a?(Hash)
+
+      # ap params
+
+      # ap QUERY_STRING_BLACKLIST
+      # ap params
+      search_parms = {}
+      operators = ["gt", "gte", "lt", "lte"]
+
+      # params.each do |p,q|
+      #   puts p
+      # end
+
+      xs = params.reject { |k,_| QUERY_STRING_BLACKLIST.include?(k) }
+      ap "after xs"
+      ap xs
+      xs.each do |key,value|
+        tokens = key.split('_')
+        if tokens.nil? || tokens.length == 1
+          search_parms[key] = value
+        else
+          token_length = tokens[tokens.length-1].length-1
+          if operators.include?(tokens[tokens.length-1])
+            operator = "$" + tokens[tokens.length-1]
+            new_key = key[0,key.length-token_length-2].to_sym
+            search_parms[new_key] = { operator => value }
+          elsif tokens[tokens.length-1] == "between" && value.split("_").length > 1
+            new_key = key[0,key.length-token_length-2].to_sym
+            vals = value.split("_")
+            search_parms[new_key] = {"$gte" => vals[0], "$lte" => vals[1]}
+          else
+            search_parms[key] = value
+          end
+        end
+      end
+      puts search_parms
+      search_parms
+    end
 
 
   end

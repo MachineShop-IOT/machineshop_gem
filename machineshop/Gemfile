@@ -6,3 +6,4 @@ gemspec
 gem "mysql"
 gem "activerecord"
 gem "awesome_print"
+gem 'will_paginate'

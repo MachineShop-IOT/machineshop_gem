@@ -22,7 +22,7 @@ describe MachineShop::Device do
          :per_page => 10},
         auth_token)
 
-    ap "listing all devices"
+    # ap "listing all devices"
     # puts element_data
     device = element_data[0]
     device.should_not be_nil

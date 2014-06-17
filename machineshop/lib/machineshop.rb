@@ -106,6 +106,7 @@ module MachineShop
     end
 
     def platform_request(url, auth_token, body_hash=nil, http_verb=:get )
+      rbody=nil
       if http_verb==:get
 
         rbody = getFromCache(url,body_hash)
@@ -113,8 +114,11 @@ module MachineShop
         rcode="202"
 
       end
+      # if !rbody
+      puts rbody
+      if (rbody.nil? || rbody.empty?)
 
-      if !rbody
+        ap "Not found in local, calling from API"
 
         ap "body_hash: #{body_hash}"
         opts = nil
@@ -176,9 +180,6 @@ module MachineShop
         rbody = response.body
         # puts rbody
         rcode = response.code
-        # ap rbody-
-        # ap "rcode"
-        # ap rcode
       end
 
 
@@ -188,8 +189,6 @@ module MachineShop
         # Would use :symbolize_names => true, but apparently there is
         # some library out there that makes symbolize_names not work.
         resp = MachineShop::JSON.load(rbody)
-        # ap "after jsonify"
-        # ap resp
         resp ||= {}
         resp = Util.symbolize_names(resp)
 
@@ -312,10 +311,6 @@ module MachineShop
 
 
     def getFromCache(url, body_hash)
-      ap "inside getFromCache"
-
-      ap "filter parameters"
-      ap body_hash
       id=nil
       splitted = url.split('/')
       klass = splitted[-1]
@@ -334,20 +329,14 @@ module MachineShop
         puts "yessss #{klass.pluralize} exists"
         resp= nil
         if id
-          # puts "ahhha yaha po "
           resp = modelClass.find_by(_id: id)
         else
           pagination = body_hash.select{|k| k==:per_page || k==:page}
-          puts "my pagination "
-          puts pagination
-          resp = modelClass.all.where(parse_query_string body_hash).paginate(:per_page=>20,:page=>1)
+          resp = modelClass.where(parse_query_string body_hash)
+          # .paginate(:per_page=>20,:page=>1)
         end
         result = []
-        # ap "MADAAL CHOR starts "
-        result = resp.to_json(:except=>[:id])
-        # includes ? resp.to_json : resp.to_json
-        puts result
-        # ap "MADAAL CHOR ends "
+        result = resp.to_json(:except=>[:id]) if !(resp.nil? || resp.empty?)
         return result
       end
     end
@@ -357,38 +346,12 @@ module MachineShop
       'per_page'
     ]
 
-    #TODO (JC) - document this method
     def parse_query_string(query_params)
-
-      # newParams = params.collect {|k,v| k.to_s=>v}
-
       params = Hash[query_params.map{ |k, v| [k.to_s, v] }]
-
-
-
-      # ap "new prrrr"
-      # puts newParams
-
-
-
-      # ap "inside parse_query_string"
-
-      # params = params.to_a if params.is_a?(Hash)
-
-      # ap params
-
-      # ap QUERY_STRING_BLACKLIST
-      # ap params
       search_parms = {}
       operators = ["gt", "gte", "lt", "lte"]
 
-      # params.each do |p,q|
-      #   puts p
-      # end
-
       xs = params.reject { |k,_| QUERY_STRING_BLACKLIST.include?(k) }
-      ap "after xs"
-      ap xs
       xs.each do |key,value|
         tokens = key.split('_')
         if tokens.nil? || tokens.length == 1

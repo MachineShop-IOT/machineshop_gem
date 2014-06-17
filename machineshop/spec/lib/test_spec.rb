@@ -19,11 +19,13 @@ describe MachineShop::Device do
   it "should get all devices for the user" do
     element_data = MachineShop::Device.all(
         {:page => 1,
-         :per_page => 10},
+         :per_page => 10,
+         :name=>"my_device"
+         },
         auth_token)
 
-    # ap "listing all devices"
-    # puts element_data
+    ap "listing all devices"
+    ap element_data.as_json
     device = element_data[0]
     device.should_not be_nil
     device.should be_kind_of MachineShop::Device

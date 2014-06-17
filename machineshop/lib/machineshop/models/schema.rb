@@ -1,12 +1,8 @@
 ActiveRecord::Schema.define do
   self.verbose = false
-  create_table :people do |t|
-    t.string :first_name
-    t.string :last_name
-    t.string :short_name
-  end
+  
 
-  create_table :device_caches do |t|
+    create_table :device_caches do |t|
     t.string :_id
     t.string :active
     t.string :created_at

@@ -20,7 +20,8 @@ module MachineShop
         @retrieve_options = {}
       end
 
-      @auth_token = auth_token
+      @auth_token = auth_token    
+
       @values = {}
       # This really belongs in APIResource, but not putting it there allows us
       # to have a unified inspect method

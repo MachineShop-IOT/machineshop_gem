@@ -11,6 +11,7 @@ publisher_password = 'password'
       :email => publisher_username,
       :password => publisher_password
   )
+  # ap user
 
 describe MachineShop::Device do
 
@@ -25,7 +26,7 @@ describe MachineShop::Device do
         auth_token)
 
     ap "listing all devices"
-    ap element_data.as_json
+    # ap element_data.as_json
     device = element_data[0]
     device.should_not be_nil
     device.should be_kind_of MachineShop::Device

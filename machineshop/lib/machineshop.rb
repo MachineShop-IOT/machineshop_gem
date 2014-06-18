@@ -109,17 +109,13 @@ module MachineShop
       rbody=nil
       if http_verb==:get
 
-        rbody = getFromCache(url,body_hash)
+        rbody = getFromCache(url,body_hash,auth_token)
         # rbody = nil
         rcode="202"
 
       end
-      # if !rbody
-      puts rbody
       if (rbody.nil? || rbody.empty?)
-
         ap "Not found in local, calling from API"
-
         ap "body_hash: #{body_hash}"
         opts = nil
         api_uri = api_base_url + url
@@ -192,7 +188,7 @@ module MachineShop
         resp ||= {}
         resp = Util.symbolize_names(resp)
 
-        # saveIntoCache(url,resp)
+        saveIntoCache(url,resp,auth_token) if http_verb == :get
 
         resp.merge!({:http_code => rcode}) if resp.is_a?(Hash)
         return resp
@@ -257,20 +253,20 @@ module MachineShop
     end
 
 
-    #Check if the class with the variable exists
-    # def class_exists?(class_name)
-    #   klass = class_name.constantize
-    #   return klass.is_a?(Class)
-    # rescue NameError =>e
-    #   puts "rescue ma gayo #{e.message}"
-    #   return false
-    # end
+    # Check if the class with the variable exists
+    def class_exists?(class_name)
+      klass = class_name.constantize
+      return klass.is_a?(Class)
+    rescue NameError =>e
+      puts "rescue ma gayo #{e.message}"
+      return false
+    end
 
 
     #get the classname from url and get the record if exists
 
 
-    def saveIntoCache(url, data)
+    def saveIntoCache(url, data,auth_token)
       id=nil
       splitted = url.split('/')
       klass = splitted[-1]
@@ -281,36 +277,49 @@ module MachineShop
       end
       klass = klass.capitalize+"Cache"
       puts "&&&&&&&& creating dynamic class #{klass} &&&&&&&&&&&"
-      modelClass = Object.const_set klass, Class.new(ActiveRecord::Base)
 
-      modelClass.inheritance_column = :_type_disabled
+
+      # if !class_exists?(klass)
+        modelClass ||= (Object.const_set klass, Class.new(ActiveRecord::Base))
+        modelClass.inheritance_column = :_type_disabled
+      # end
+
       #Because 'type' is reserved for storing the class in case of inheritance and our array has "TYPE" key
       db = MachineShop::Database.new
       if ActiveRecord::Base.connection.table_exists? CGI.escape(klass.pluralize.underscore)
         puts "db table #{klass.pluralize.underscore} exists"
+ap "befeeeeeeee"
+        ap data
 
         data.each do |data_arr|
           if data_arr
-            @activeObject = modelClass.find_by(_id: data_arr[:_id]) || modelClass.new
+            ap "madaaall"
+            ap data_arr
+
+            findId = data_arr[:_id] || data_arr["_id"]
+            @activeObject = modelClass.find_by(_id: findId) || modelClass.new
             data_arr.each do |k,v|
               val=nil
               case v
               when Array
-                val = v.map { |o| Hash[o.each_pair.to_a] }.to_json
+                val = v.to_json
               else
                 val =v
               end
               @activeObject.send("#{k}=",val)
+              # @activeObject[k]=val
             end
+            @activeObject.send("auth_token=",auth_token)
             @activeObject.save
           end
 
         end
       end
+
     end
 
 
-    def getFromCache(url, body_hash)
+    def getFromCache(url, body_hash,auth_token)
       id=nil
       splitted = url.split('/')
       klass = splitted[-1]
@@ -321,8 +330,10 @@ module MachineShop
         #the last item is id ,then take -2
       end
       klass = klass.capitalize+"Cache"
+
       modelClass = Object.const_set klass, Class.new(ActiveRecord::Base)
       modelClass.inheritance_column = :_type_disabled
+
       db = MachineShop::Database.new
       # puts ActiveRecord::Base.connection.tables
       if ActiveRecord::Base.connection.table_exists? CGI.escape(klass.pluralize.underscore)
@@ -332,11 +343,11 @@ module MachineShop
           resp = modelClass.find_by(_id: id)
         else
           pagination = body_hash.select{|k| k==:per_page || k==:page}
-          resp = modelClass.where(parse_query_string body_hash)
+          resp = modelClass.where(parse_query_string(body_hash,auth_token))
           # .paginate(:per_page=>20,:page=>1)
         end
         result = []
-        result = resp.to_json(:except=>[:id]) if !(resp.nil? || resp.empty?)
+        result = resp.to_json(:except=>[:id]) if !(resp.nil?)
         return result
       end
     end
@@ -346,7 +357,7 @@ module MachineShop
       'per_page'
     ]
 
-    def parse_query_string(query_params)
+    def parse_query_string(query_params,auth_token)
       params = Hash[query_params.map{ |k, v| [k.to_s, v] }]
       search_parms = {}
       operators = ["gt", "gte", "lt", "lte"]
@@ -371,7 +382,9 @@ module MachineShop
           end
         end
       end
-      puts search_parms
+      #append auth_token = auth_token part as well
+      search_parms['auth_token']=auth_token
+      # puts search_parms
       search_parms
     end
 

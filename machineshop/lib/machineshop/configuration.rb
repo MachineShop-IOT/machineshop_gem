@@ -4,7 +4,7 @@ module MachineShop
 
 		def initialize
 			#default values
-			@expiry_time=6
+			@expiry_time=0
 			@enable_caching = true		
 		end
 	end

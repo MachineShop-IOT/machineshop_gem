@@ -107,14 +107,15 @@ module MachineShop
 
     def platform_request(url, auth_token, body_hash=nil, http_verb=:get )
       rbody=nil
+      cachedContent = :true
       if http_verb==:get
 
         rbody = getFromCache(url,body_hash,auth_token)
-        # rbody = nil
-        rcode="202"
+        rcode="200"
 
       end
       if (rbody.nil? || rbody.empty?)
+        cachedContent=:false
         ap "Not found in local, calling from API"
         ap "body_hash: #{body_hash}"
         opts = nil
@@ -153,6 +154,7 @@ module MachineShop
 
         begin
           response = execute_request(opts)
+
         rescue SocketError => e
           self.handle_restclient_error(e)
         rescue NoMethodError => e
@@ -184,11 +186,13 @@ module MachineShop
       begin
         # Would use :symbolize_names => true, but apparently there is
         # some library out there that makes symbolize_names not work.
+        # puts "yaha aako type"
+        # puts rbody
         resp = MachineShop::JSON.load(rbody)
         resp ||= {}
         resp = Util.symbolize_names(resp)
 
-        saveIntoCache(url,resp,auth_token) if http_verb == :get
+        saveIntoCache(url,resp,auth_token) if (http_verb == :get && cachedContent==:false)
 
         resp.merge!({:http_code => rcode}) if resp.is_a?(Hash)
         return resp
@@ -267,6 +271,9 @@ module MachineShop
 
 
     def saveIntoCache(url, data,auth_token)
+      ap "inside save into cache"
+      # puts data.as_json
+
       id=nil
       splitted = url.split('/')
       klass = splitted[-1]
@@ -280,35 +287,63 @@ module MachineShop
 
 
       # if !class_exists?(klass)
-        modelClass ||= (Object.const_set klass, Class.new(ActiveRecord::Base))
-        modelClass.inheritance_column = :_type_disabled
+      modelClass ||= (Object.const_set klass, Class.new(ActiveRecord::Base))
+      modelClass.inheritance_column = :_type_disabled
       # end
 
       #Because 'type' is reserved for storing the class in case of inheritance and our array has "TYPE" key
       db = MachineShop::Database.new
       if ActiveRecord::Base.connection.table_exists? CGI.escape(klass.pluralize.underscore)
         puts "db table #{klass.pluralize.underscore} exists"
-ap "befeeeeeeee"
-        ap data
 
         data.each do |data_arr|
           if data_arr
-            ap "madaaall"
-            ap data_arr
 
-            findId = data_arr[:_id] || data_arr["_id"]
-            @activeObject = modelClass.find_by(_id: findId) || modelClass.new
-            data_arr.each do |k,v|
-              val=nil
-              case v
-              when Array
-                val = v.to_json
-              else
-                val =v
+            if data_arr.first.class==String
+              @activeObject = modelClass.find_by(rule_condition: data_arr.select{|k| k.include?("rule_condition")})  || modelClass.new
+              data_arr.each do |k|
+
+                if k.include?("rule_condition")
+                  @activeObject.rule_condition = k
+                else
+                  @activeObject.rule_description=k
+                end
               end
-              @activeObject.send("#{k}=",val)
-              # @activeObject[k]=val
+            else
+
+              findId = data_arr[:_id] || data_arr["_id"]
+              @activeObject = modelClass.find_by(_id: findId) || modelClass.new
+              data_arr.each do |k,v|
+
+                val=nil
+
+                if v.class==Array
+                  val = v.to_json
+                elsif v.class==Hash
+                  val = v.to_json
+                else
+                  val=v
+                end
+
+
+
+
+                # case v
+
+                # when v.class==Hash
+
+                #   # val ="valll"
+
+                # when Array
+
+                # else
+                #   val =v
+                # end
+                @activeObject.send("#{k}=",val)
+                # @activeObject[k]=val
+              end
             end
+
             @activeObject.send("auth_token=",auth_token)
             @activeObject.save
           end
@@ -320,36 +355,64 @@ ap "befeeeeeeee"
 
 
     def getFromCache(url, body_hash,auth_token)
-      id=nil
-      splitted = url.split('/')
-      klass = splitted[-1]
+      result =Array.new
+      db = MachineShop::Database.new.db_connected
+      if db
 
-      if /[0-9]/.match(klass)
-        klass = splitted[-2]
-        id=splitted[-1]
-        #the last item is id ,then take -2
-      end
-      klass = klass.capitalize+"Cache"
+        # puts "herererererere"
+        # ap body_hash
+        id=nil
+        splitted = url.split('/')
+        klass = splitted[-1]
 
-      modelClass = Object.const_set klass, Class.new(ActiveRecord::Base)
-      modelClass.inheritance_column = :_type_disabled
-
-      db = MachineShop::Database.new
-      # puts ActiveRecord::Base.connection.tables
-      if ActiveRecord::Base.connection.table_exists? CGI.escape(klass.pluralize.underscore)
-        puts "yessss #{klass.pluralize} exists"
-        resp= nil
-        if id
-          resp = modelClass.find_by(_id: id)
-        else
-          pagination = body_hash.select{|k| k==:per_page || k==:page}
-          resp = modelClass.where(parse_query_string(body_hash,auth_token))
-          # .paginate(:per_page=>20,:page=>1)
+        if /[0-9]/.match(klass)
+          klass = splitted[-2]
+          id=splitted[-1]
+          #the last item is id ,then take -2
         end
-        result = []
-        result = resp.to_json(:except=>[:id]) if !(resp.nil?)
-        return result
+        klass = klass.capitalize+"Cache"
+
+        modelClass = Object.const_set klass, Class.new(ActiveRecord::Base)
+        modelClass.inheritance_column = :_type_disabled
+
+        # db = MachineShop::Database.new.db_connected
+        # puts ActiveRecord::Base.connection.tables
+        if ActiveRecord::Base.connection.table_exists? CGI.escape(klass.pluralize.underscore)
+          puts "yessss db:table #{klass.pluralize} exists"
+          data_exist=false
+          resp= nil
+          if id
+            puts "if id bhitra"
+            resp = modelClass.find_by(_id: id, auth_token: auth_token)
+            data_exist=true if resp
+          else
+            # pagination = body_hash.select{|k| k==:per_page || k==:page} if body_hash
+            resp = modelClass.where(parse_query_string(body_hash,auth_token))
+            exist = true if resp.exists?
+          end
+
+          # result ="AALU"
+          if data_exist
+            if(klass.include?("rule_condition"))
+              resp.each do |rTemp|
+                temp = Array.new
+                temp.push rTemp["rule_description"]
+                temp.push rTemp["rule_condition"]
+                result << temp
+              end
+              result = result.to_json(:except=>[:id]) if result
+            else
+              puts "else bhitra result #{result}"
+
+              result = resp.to_json(:except=>[:id]) if resp
+            end
+          end
+          ap "FROM GETTING CACHE"
+          puts result.class
+          # puts result
+        end
       end
+      return result
     end
 
     QUERY_STRING_BLACKLIST = [
@@ -358,27 +421,30 @@ ap "befeeeeeeee"
     ]
 
     def parse_query_string(query_params,auth_token)
-      params = Hash[query_params.map{ |k, v| [k.to_s, v] }]
-      search_parms = {}
-      operators = ["gt", "gte", "lt", "lte"]
 
-      xs = params.reject { |k,_| QUERY_STRING_BLACKLIST.include?(k) }
-      xs.each do |key,value|
-        tokens = key.split('_')
-        if tokens.nil? || tokens.length == 1
-          search_parms[key] = value
-        else
-          token_length = tokens[tokens.length-1].length-1
-          if operators.include?(tokens[tokens.length-1])
-            operator = "$" + tokens[tokens.length-1]
-            new_key = key[0,key.length-token_length-2].to_sym
-            search_parms[new_key] = { operator => value }
-          elsif tokens[tokens.length-1] == "between" && value.split("_").length > 1
-            new_key = key[0,key.length-token_length-2].to_sym
-            vals = value.split("_")
-            search_parms[new_key] = {"$gte" => vals[0], "$lte" => vals[1]}
-          else
+      search_parms = {}
+      if query_params
+        params = Hash[query_params.map{ |k, v| [k.to_s, v] }]
+        operators = ["gt", "gte", "lt", "lte"]
+
+        xs = params.reject { |k,_| QUERY_STRING_BLACKLIST.include?(k) }
+        xs.each do |key,value|
+          tokens = key.split('_')
+          if tokens.nil? || tokens.length == 1
             search_parms[key] = value
+          else
+            token_length = tokens[tokens.length-1].length-1
+            if operators.include?(tokens[tokens.length-1])
+              operator = "$" + tokens[tokens.length-1]
+              new_key = key[0,key.length-token_length-2].to_sym
+              search_parms[new_key] = { operator => value }
+            elsif tokens[tokens.length-1] == "between" && value.split("_").length > 1
+              new_key = key[0,key.length-token_length-2].to_sym
+              vals = value.split("_")
+              search_parms[new_key] = {"$gte" => vals[0], "$lte" => vals[1]}
+            else
+              search_parms[key] = value
+            end
           end
         end
       end

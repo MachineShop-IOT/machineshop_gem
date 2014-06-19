@@ -5,7 +5,37 @@ ActiveRecord::Schema.define do
     #     t.column :auth_token, :string, limit: 60
     # end
 
-    change_table(:rule_caches) do |t|
+
+    create_table :report_caches do |t|
+        t.string :_id
+        t.string :created_at
+        t.string :deleted_at
+        t.string :device_datetime
+        t.string :device_instance_id
+        t.string :duplicate
+        t.string :payload
+        t.string :profile_timestamps
+        t.string :raw_data
+        t.string :report_processor
+        t.string :stale
+        t.string :updated_at
+        t.string :auth_token
+    end
+
+    create_table :comparison_rule_conditions_caches do |t|
+        t.string :auth_token
+        t.string :rule_condition
+        t.string :rule_description
+    end
+
+
+    create_table :join_rule_conditions_caches do |t|
+        t.string :rule_condition
+        t.string :rule_description
+        t.timestamp
+    end
+
+    change_table :rule_caches do |t|
         t.column :actions, :string
         t.column :comparison_value, :string
         t.column :deleted, :string
@@ -14,7 +44,7 @@ ActiveRecord::Schema.define do
         t.column :modified_date, :string
         t.column :operator, :string
         t.column :rule_histories, :string
-        t.column :else_actions=, :string
+        t.column :else_actions, :string
     end
 
     create_table :rule_caches do |t|

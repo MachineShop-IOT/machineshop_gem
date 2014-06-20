@@ -1,10 +1,36 @@
 ActiveRecord::Schema.define do
     # puts ActiveRecord::Schema.new.migrations_paths
-    # self.verbose = false
+    self.verbose = false
     # change_table(:device_caches) do |t|
     #     t.column :auth_token, :string, limit: 60
     # end
 
+    create_table :device_instance_caches do |t|
+        t.string :_id
+        t.string :alert_count
+        t.string :name
+        t.string :active
+        t.string :device_id
+        t.string :user_id
+        t.string :auth_token
+        t.string :updated_at
+        t.string :created_at
+        t.string :_type
+        t.text :device
+        t.text :last_report
+        t.string :report_count
+        t.string :tag_ids
+        t.string :rule_ids
+        t.string :user_type
+        t.string :deleted_at
+
+    end
+
+    create_table :api_requests do |t|
+        t.timestamps null: false
+        t.text :url, null: false
+        t.string :auth_token, null:false
+    end
 
     create_table :report_caches do |t|
         t.string :_id
@@ -13,7 +39,7 @@ ActiveRecord::Schema.define do
         t.string :device_datetime
         t.string :device_instance_id
         t.string :duplicate
-        t.string :payload
+        t.text :payload
         t.string :profile_timestamps
         t.string :raw_data
         t.string :report_processor
@@ -35,18 +61,6 @@ ActiveRecord::Schema.define do
         t.timestamp
     end
 
-    change_table :rule_caches do |t|
-        t.column :actions, :string
-        t.column :comparison_value, :string
-        t.column :deleted, :string
-        t.column :device_attribute, :string
-        t.column :last_run, :string
-        t.column :modified_date, :string
-        t.column :operator, :string
-        t.column :rule_histories, :string
-        t.column :else_actions, :string
-    end
-
     create_table :rule_caches do |t|
         t.string :_id
         t.string :active
@@ -63,6 +77,15 @@ ActiveRecord::Schema.define do
         t.string :updated_at
         t.string :user_id
         t.string :auth_token
+        t.string :actions
+        t.string :comparison_value
+        t.string :deleted
+        t.string :device_attribute
+        t.string :last_run
+        t.string :modified_date
+        t.string :operator
+        t.string :rule_histories
+        t.string :else_actions
     end
 
 

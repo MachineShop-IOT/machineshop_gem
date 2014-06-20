@@ -7,6 +7,14 @@ MachineShop.api_base_url= 'http://stage.services.machineshop.io/api/v0'
 publisher_username = 'admin@csr.com'
 publisher_password = 'password'
 
+MachineShop.configure do |config|
+  config.db_name = "machineshop"
+  config.db_username="root"
+  config.db_password="root"
+  config.db_host= "localhost"
+  config.expiry_time= lambda{10.seconds.ago}
+   #second
+end
 
   auth_token, user = MachineShop::User.authenticate(
       :email => publisher_username,

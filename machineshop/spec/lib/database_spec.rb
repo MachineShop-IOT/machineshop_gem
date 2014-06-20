@@ -35,57 +35,12 @@ describe "#expiry_time=" do
     puts "config.expiry_time #{config.expiry_time}"
   end
 
-  it "should use activeRecord to create new record" do\
-
-
-
-
-
-
-
+  it "should use activeRecord to create new record" do
   end
 
-
-
-  # db = MachineShop::Database.new
-
-
   it "stores into database" do
-    # Database.new
     db = MachineShop::Database.new
-
-
-
-
-  #   a="Devicecache"
-
-  #   begin
-  #     a.constantize.is_a?(Class)
-  # l = a.constantize.all
-
-  #   rescue NameError =>e
-  #     puts "errorrrrr"
-  #   end
-
-
-  # ap "found"
-  # ap l.as_json
-
-  # puts "after db =========="
-  # puts "db_connected ? #{db.db_connected}"
-  # People.create(:first_name=>"lau",:last_name=>"khattam")
-
-  ap "finding by first_name"
-  rec = People.find_by(first_name: 'niroj')
-
-  ap rec.as_json
-
-  # if db.db_connected
-
-  #   MachineShop::Database.insert('2343','endpoints',"/user/devices/id23")
-
-  # end
-
-
-end
+    rec = People.find_by(first_name: 'niroj')
+    ap rec.as_json
+  end
 end

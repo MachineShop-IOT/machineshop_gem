@@ -47,7 +47,7 @@ require 'machineshop/errors/authentication_error'
 require 'machineshop/errors/api_connection_error'
 
 #Models
-# require 'machineshop/models/people'
+require 'machineshop/models/api_request'
 # require 'machineshop/models/device_cache'
 
 
@@ -108,10 +108,19 @@ module MachineShop
     def platform_request(url, auth_token, body_hash=nil, http_verb=:get )
       rbody=nil
       cachedContent = :true
+      # ApiRequest.cache(url,MachineShop.configuration.expiry_time)
       if http_verb==:get
 
-        rbody = getFromCache(url,body_hash,auth_token)
-        rcode="200"
+        if db_connected?
+
+          ApiRequest.cache(url, auth_token, MachineShop.configuration.expiry_time) do
+
+            puts "Not expired , calling from local "
+
+            rbody = get_from_cache(url,body_hash,auth_token)
+            rcode="200"
+          end
+        end
 
       end
       if (rbody.nil? || rbody.empty?)
@@ -186,13 +195,11 @@ module MachineShop
       begin
         # Would use :symbolize_names => true, but apparently there is
         # some library out there that makes symbolize_names not work.
-        # puts "yaha aako type"
-        # puts rbody
         resp = MachineShop::JSON.load(rbody)
         resp ||= {}
         resp = Util.symbolize_names(resp)
 
-        saveIntoCache(url,resp,auth_token) if (http_verb == :get && cachedContent==:false)
+        save_into_cache(url,resp,auth_token) if (http_verb == :get && cachedContent==:false)
 
         resp.merge!({:http_code => rcode}) if resp.is_a?(Hash)
         return resp
@@ -262,136 +269,177 @@ module MachineShop
       klass = class_name.constantize
       return klass.is_a?(Class)
     rescue NameError =>e
-      puts "rescue ma gayo #{e.message}"
       return false
     end
 
 
     #get the classname from url and get the record if exists
 
-
-    def saveIntoCache(url, data,auth_token)
-      ap "inside save into cache"
-      # puts data.as_json
-
-      id=nil
-      splitted = url.split('/')
-      klass = splitted[-1]
-
-      if /[0-9]/.match(klass)
-        klass = splitted[-2]
-        id=splitted[-1]
+    #Check if db_connected
+    def db_connected?
+      db_connected = true
+      begin
+        MachineShop::Database.new
+      rescue DatabaseError =>e
+        # puts e.message
+        db_connected= false
+      rescue SchemaError =>e
+        # puts e.message
+        # db_connected=true
       end
-      klass = klass.capitalize+"Cache"
-      puts "&&&&&&&& creating dynamic class #{klass} &&&&&&&&&&&"
+
+      db_connected
+    end
 
 
-      # if !class_exists?(klass)
-      modelClass ||= (Object.const_set klass, Class.new(ActiveRecord::Base))
-      modelClass.inheritance_column = :_type_disabled
-      # end
+    def save_into_cache(url, data,auth_token)
+      # ap "inside save into cache"
+      if db_connected?
 
-      #Because 'type' is reserved for storing the class in case of inheritance and our array has "TYPE" key
-      db = MachineShop::Database.new
-      if ActiveRecord::Base.connection.table_exists? CGI.escape(klass.pluralize.underscore)
-        puts "db table #{klass.pluralize.underscore} exists"
+        id=nil
+        splitted = url.split('/')
+        klass = splitted[-1]
 
-        data.each do |data_arr|
-          if data_arr
+        # if /[0-9]/.match(klass)
+        #   klass = splitted[-2]
+        #   id=splitted[-1]
+        # end
 
-            if data_arr.first.class==String
-              @activeObject = modelClass.find_by(rule_condition: data_arr.select{|k| k.include?("rule_condition")})  || modelClass.new
-              data_arr.each do |k|
+        if /[0-9]/.match(klass)
+          id=splitted[-1]
 
-                if k.include?("rule_condition")
-                  @activeObject.rule_condition = k
-                else
-                  @activeObject.rule_description=k
-                end
-              end
-            else
-
-              findId = data_arr[:_id] || data_arr["_id"]
-              @activeObject = modelClass.find_by(_id: findId) || modelClass.new
-              data_arr.each do |k,v|
-
-                val=nil
-
-                if v.class==Array
-                  val = v.to_json
-                elsif v.class==Hash
-                  val = v.to_json
-                else
-                  val=v
-                end
-
-
-
-
-                # case v
-
-                # when v.class==Hash
-
-                #   # val ="valll"
-
-                # when Array
-
-                # else
-                #   val =v
-                # end
-                @activeObject.send("#{k}=",val)
-                # @activeObject[k]=val
-              end
-            end
-
-            @activeObject.send("auth_token=",auth_token)
-            @activeObject.save
+          if splitted[-3]=="rule"
+            klass="rule"
+          else
+            klass = splitted[-2]
           end
 
+        end
+
+
+        klass = klass.capitalize+"Cache"
+        puts "creating dynamic class #{klass}"
+
+
+        modelClass ||= (Object.const_set klass, Class.new(ActiveRecord::Base))
+        modelClass.inheritance_column = :_type_disabled
+        #Because 'type' is reserved for storing the class in case of inheritance and our array has "TYPE" key
+
+        if ActiveRecord::Base.connection.table_exists? CGI.escape(klass.pluralize.underscore)
+
+          puts "db table #{klass.pluralize.underscore} exists"
+          if data.class ==Hash
+
+            findId = data[:_id] || data["_id"]
+            @activeObject = modelClass.find_by(_id: findId) || modelClass.new
+            data.each do |k,v|
+
+              val=nil
+
+              if v.class==Array
+                val = v.to_json
+              elsif v.class==Hash
+                val = v.to_json
+              else
+                val=v
+              end
+            @activeObject.send("#{k}=",val)
+            end
+
+
+          else
+            data.each do |data_arr|
+
+              if data_arr
+
+                if data_arr.first.class==String && data_arr.class==Array
+                  ap data_arr.as_json
+
+                  @activeObject = modelClass.find_by(rule_condition: data_arr.select{|k| k.include?("rule_condition")})  || modelClass.new
+                  data_arr.each do |k|
+
+                    if k.include?("rule_condition")
+                      @activeObject.rule_condition = k
+                    else
+                      @activeObject.rule_description=k
+                    end
+                  end
+
+
+                else
+                  if data_arr.class!=String
+                  findId = data_arr[:_id] || data_arr["_id"]
+                  @activeObject = modelClass.find_by(_id: findId) || modelClass.new
+                  data_arr.each do |k,v|
+
+                    val=nil
+
+                    if v.class==Array
+                      val = v.to_json
+                    elsif v.class==Hash
+                      val = v.to_json
+                    else
+                      val=v
+                    end
+
+                    @activeObject.send("#{k}=",val)
+                  end
+                end
+                end
+              end
+            end
+          end
+
+
+          @activeObject.send("auth_token=",auth_token)
+          @activeObject.save
         end
       end
 
     end
 
 
-    def getFromCache(url, body_hash,auth_token)
-      result =Array.new
-      db = MachineShop::Database.new.db_connected
-      if db
 
-        # puts "herererererere"
-        # ap body_hash
+    def get_from_cache(url, body_hash,auth_token)
+      # ap "inside get_from_cache"
+
+      result =Array.new
+      if db_connected?
+
         id=nil
         splitted = url.split('/')
         klass = splitted[-1]
 
+
         if /[0-9]/.match(klass)
-          klass = splitted[-2]
           id=splitted[-1]
-          #the last item is id ,then take -2
+
+          if splitted[-3]=="rule"
+            klass="rule"
+          else
+            klass = splitted[-2]
+          end
+
         end
+
         klass = klass.capitalize+"Cache"
 
         modelClass = Object.const_set klass, Class.new(ActiveRecord::Base)
         modelClass.inheritance_column = :_type_disabled
 
-        # db = MachineShop::Database.new.db_connected
-        # puts ActiveRecord::Base.connection.tables
+        data_exist=false
         if ActiveRecord::Base.connection.table_exists? CGI.escape(klass.pluralize.underscore)
-          puts "yessss db:table #{klass.pluralize} exists"
-          data_exist=false
+          puts "db:table #{klass.pluralize} exists"
           resp= nil
           if id
-            puts "if id bhitra"
             resp = modelClass.find_by(_id: id, auth_token: auth_token)
             data_exist=true if resp
           else
             # pagination = body_hash.select{|k| k==:per_page || k==:page} if body_hash
             resp = modelClass.where(parse_query_string(body_hash,auth_token))
-            exist = true if resp.exists?
+            data_exist = true if resp.exists?
           end
 
-          # result ="AALU"
           if data_exist
             if(klass.include?("rule_condition"))
               resp.each do |rTemp|
@@ -402,14 +450,10 @@ module MachineShop
               end
               result = result.to_json(:except=>[:id]) if result
             else
-              puts "else bhitra result #{result}"
-
               result = resp.to_json(:except=>[:id]) if resp
             end
+
           end
-          ap "FROM GETTING CACHE"
-          puts result.class
-          # puts result
         end
       end
       return result
@@ -450,7 +494,6 @@ module MachineShop
       end
       #append auth_token = auth_token part as well
       search_parms['auth_token']=auth_token
-      # puts search_parms
       search_parms
     end
 

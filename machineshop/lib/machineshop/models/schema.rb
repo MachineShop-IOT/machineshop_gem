@@ -5,6 +5,16 @@ ActiveRecord::Schema.define do
     #     t.column :auth_token, :string, limit: 60
     # end
 
+    
+    create_table :api_endpoints do |t| 
+        t.string :_id
+        t.string :verb
+        t.string :endpoint
+        t.string :auth_token
+    end
+    add_index :api_endpoints, [:verb,:endpoint], unique=>true
+
+
     create_table :device_instance_caches do |t|
         t.string :_id
         t.string :alert_count

@@ -100,6 +100,43 @@ module MachineShop
       end
       result
     end
+
+    def self.get_klass_from_url(url)
+      id=nil
+      klass=nil
+      splitted = url.split('/')
+      klass = splitted[-1]
+      if /[0-9]/.match(klass)
+        id=splitted[-1]
+
+        if splitted[-3]=="rule"
+          klass="rule"
+        else
+          klass = splitted[-2]
+        end
+      end
+      ap "returned from get_klass_from_url"
+      puts "#{id}, => #{klass}"
+      return id,klass
+    end
+
+    #Check if db_connected
+    def self.db_connected?
+      db_connected = true
+      begin
+        MachineShop::Database.new
+      rescue DatabaseError =>e
+        # puts e.message
+        db_connected= false
+      rescue SchemaError =>e
+        # puts e.message
+        # db_connected=true
+      end
+
+      db_connected
+    end
+
+
   end
 end
 

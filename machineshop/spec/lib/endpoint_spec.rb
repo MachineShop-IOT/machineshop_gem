@@ -19,36 +19,26 @@ end
 # :email => publisher_username,
 # :password => publisher_password
 # )
-# ap user
 
 auth_token="2jzZmcHWLZyghsxcB16E"
 
+describe MachineShop::EndPoints do
 
-describe MachineShop::Device do
 
-  device = nil
+  it "should call get method " do 
+    # test = MachineShop::get("/gem/routes/v0",auth_token)
+      test = MachineShop::EndPoints.all("v0",auth_token)
 
-  it "should get a geocoded address" do
-    element_data = MachineShop::Mapping.geocode(
-    {
-      :latlng => "40.714224,-73.961452",
-      # :address => "1600 Amphitheatre Parkway, Mountain View, CA",
-      # :sensor => "false"
-    },
-    auth_token)
+  # ap test.as_json
 
-    #puts "GEO: #{element_data}"
-    # ap element_data.as_json
-
-    # MachineShop::Device.url
-
-    element_data.should_not be_nil
-    element_data.should_not be_empty
   end
 
+  # it "should get all the endpoints" do
 
+  #   element_data = MachineShop::EndPoints.all("v0",auth_token)
+  #   # element_data = MachineShop::EndPoints.all({:namespace=>"secm"},auth_token)
+
+  #   ap "listing all endpoints"
+  #   puts element_data.as_json
+  # end
 end
-
-
-
-

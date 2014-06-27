@@ -38,6 +38,8 @@ require 'machineshop/user'
 require 'machineshop/utility'
 require 'machineshop/json'
 require 'machineshop/util'
+require 'machineshop/end_points'
+require 'machineshop/get'
 
 # Errors
 require 'machineshop/errors/machineshop_error'
@@ -48,7 +50,7 @@ require 'machineshop/errors/api_connection_error'
 
 #Models
 require 'machineshop/models/api_request'
-# require 'machineshop/models/device_cache'
+require 'machineshop/models/api_endpoint'
 
 
 module MachineShop
@@ -111,7 +113,7 @@ module MachineShop
       # ApiRequest.cache(url,MachineShop.configuration.expiry_time)
       if http_verb==:get
 
-        if db_connected?
+        if Util.db_connected?
 
           ApiRequest.cache(url, auth_token, MachineShop.configuration.expiry_time) do
 
@@ -273,192 +275,149 @@ module MachineShop
     end
 
 
-    #get the classname from url and get the record if exists
-
-    #Check if db_connected
-    def db_connected?
-      db_connected = true
-      begin
-        MachineShop::Database.new
-      rescue DatabaseError =>e
-        # puts e.message
-        db_connected= false
-      rescue SchemaError =>e
-        # puts e.message
-        # db_connected=true
-      end
-
-      db_connected
-    end
-
-
     def save_into_cache(url, data,auth_token)
       # ap "inside save into cache"
-      if db_connected?
+      id,klass= Util.get_klass_from_url(url)
+      if !TABLE_NAME_BLACKLIST.include?(klass)
+        if Util.db_connected?
 
-        id=nil
-        splitted = url.split('/')
-        klass = splitted[-1]
-
-        # if /[0-9]/.match(klass)
-        #   klass = splitted[-2]
-        #   id=splitted[-1]
-        # end
-
-        if /[0-9]/.match(klass)
-          id=splitted[-1]
-
-          if splitted[-3]=="rule"
-            klass="rule"
-          else
-            klass = splitted[-2]
-          end
-
-        end
+          klass = klass.capitalize+"Cache"
+          puts "creating dynamic class #{klass}"
 
 
-        klass = klass.capitalize+"Cache"
-        puts "creating dynamic class #{klass}"
+          modelClass ||= (Object.const_set klass, Class.new(ActiveRecord::Base))
+          modelClass.inheritance_column = :_type_disabled
+          #Because 'type' is reserved for storing the class in case of inheritance and our array has "TYPE" key
 
+          if ActiveRecord::Base.connection.table_exists? CGI.escape(klass.pluralize.underscore)
 
-        modelClass ||= (Object.const_set klass, Class.new(ActiveRecord::Base))
-        modelClass.inheritance_column = :_type_disabled
-        #Because 'type' is reserved for storing the class in case of inheritance and our array has "TYPE" key
+            puts "db table #{klass.pluralize.underscore} exists"
+            if data.class ==Hash
 
-        if ActiveRecord::Base.connection.table_exists? CGI.escape(klass.pluralize.underscore)
+              findId = data[:_id] || data["_id"]
+              @activeObject = modelClass.find_by(_id: findId) || modelClass.new
+              data.each do |k,v|
 
-          puts "db table #{klass.pluralize.underscore} exists"
-          if data.class ==Hash
+                val=nil
 
-            findId = data[:_id] || data["_id"]
-            @activeObject = modelClass.find_by(_id: findId) || modelClass.new
-            data.each do |k,v|
-
-              val=nil
-
-              if v.class==Array
-                val = v.to_json
-              elsif v.class==Hash
-                val = v.to_json
-              else
-                val=v
-              end
-            @activeObject.send("#{k}=",val)
-            end
-
-
-          else
-            data.each do |data_arr|
-
-              if data_arr
-
-                if data_arr.first.class==String && data_arr.class==Array
-                  ap data_arr.as_json
-
-                  @activeObject = modelClass.find_by(rule_condition: data_arr.select{|k| k.include?("rule_condition")})  || modelClass.new
-                  data_arr.each do |k|
-
-                    if k.include?("rule_condition")
-                      @activeObject.rule_condition = k
-                    else
-                      @activeObject.rule_description=k
-                    end
-                  end
-
-
+                if v.class==Array
+                  val = v.to_json
+                elsif v.class==Hash
+                  val = v.to_json
                 else
-                  if data_arr.class!=String
-                  findId = data_arr[:_id] || data_arr["_id"]
-                  @activeObject = modelClass.find_by(_id: findId) || modelClass.new
-                  data_arr.each do |k,v|
+                  val=v
+                end
+                @activeObject.send("#{k}=",val)
+              end
 
-                    val=nil
 
-                    if v.class==Array
-                      val = v.to_json
-                    elsif v.class==Hash
-                      val = v.to_json
-                    else
-                      val=v
+            else
+              data.each do |data_arr|
+
+                if data_arr
+
+                  if data_arr.first.class==String && data_arr.class==Array
+                    ap data_arr.as_json
+
+                    @activeObject = modelClass.find_by(rule_condition: data_arr.select{|k| k.include?("rule_condition")})  || modelClass.new
+                    data_arr.each do |k|
+
+                      if k.include?("rule_condition")
+                        @activeObject.rule_condition = k
+                      else
+                        @activeObject.rule_description=k
+                      end
                     end
 
-                    @activeObject.send("#{k}=",val)
+
+                  else
+                    if data_arr.class!=String
+                      findId = data_arr[:_id] || data_arr["_id"]
+                      @activeObject = modelClass.find_by(_id: findId) || modelClass.new
+                      data_arr.each do |k,v|
+
+                        val=nil
+
+                        if v.class==Array
+                          val = v.to_json
+                        elsif v.class==Hash
+                          val = v.to_json
+                        else
+                          val=v
+                        end
+
+                        @activeObject.send("#{k}=",val)
+                      end
+                    end
                   end
-                end
                 end
               end
             end
-          end
 
 
-          @activeObject.send("auth_token=",auth_token)
-          @activeObject.save
-        end
-      end
+            @activeObject.send("auth_token=",auth_token)
+            @activeObject.save
 
+          end #if ActiveRecord ends
+
+        end #if db_connected ends
+      end #if !TABLE_NAME_BLACKLIST.include? ends
     end
-
 
 
     def get_from_cache(url, body_hash,auth_token)
-      # ap "inside get_from_cache"
+      ap "inside get_from_cache"
 
       result =Array.new
-      if db_connected?
+      id,klass= Util.get_klass_from_url(url)
+      ap "klass from URL "
+      ap klass
 
-        id=nil
-        splitted = url.split('/')
-        klass = splitted[-1]
+      if !TABLE_NAME_BLACKLIST.include?(klass)
+        ap "inside whitelist"
 
 
-        if /[0-9]/.match(klass)
-          id=splitted[-1]
+        if Util.db_connected?
 
-          if splitted[-3]=="rule"
-            klass="rule"
-          else
-            klass = splitted[-2]
-          end
+          klass = klass.capitalize+"Cache"
 
-        end
+          modelClass = Object.const_set klass, Class.new(ActiveRecord::Base)
+          modelClass.inheritance_column = :_type_disabled
 
-        klass = klass.capitalize+"Cache"
-
-        modelClass = Object.const_set klass, Class.new(ActiveRecord::Base)
-        modelClass.inheritance_column = :_type_disabled
-
-        data_exist=false
-        if ActiveRecord::Base.connection.table_exists? CGI.escape(klass.pluralize.underscore)
-          puts "db:table #{klass.pluralize} exists"
-          resp= nil
-          if id
-            resp = modelClass.find_by(_id: id, auth_token: auth_token)
-            data_exist=true if resp
-          else
-            # pagination = body_hash.select{|k| k==:per_page || k==:page} if body_hash
-            resp = modelClass.where(parse_query_string(body_hash,auth_token))
-            data_exist = true if resp.exists?
-          end
-
-          if data_exist
-            if(klass.include?("rule_condition"))
-              resp.each do |rTemp|
-                temp = Array.new
-                temp.push rTemp["rule_description"]
-                temp.push rTemp["rule_condition"]
-                result << temp
-              end
-              result = result.to_json(:except=>[:id]) if result
+          data_exist=false
+          if ActiveRecord::Base.connection.table_exists? CGI.escape(klass.pluralize.underscore)
+            puts "db:table #{klass.pluralize} exists"
+            resp= nil
+            if id
+              resp = modelClass.find_by(_id: id, auth_token: auth_token)
+              data_exist=true if resp
             else
-              result = resp.to_json(:except=>[:id]) if resp
+              # pagination = body_hash.select{|k| k==:per_page || k==:page} if body_hash
+              resp = modelClass.where(parse_query_string(body_hash,auth_token))
+              data_exist = true if resp.exists?
             end
 
+            if data_exist
+              if(klass.include?("rule_condition"))
+                resp.each do |rTemp|
+                  temp = Array.new
+                  temp.push rTemp["rule_description"]
+                  temp.push rTemp["rule_condition"]
+                  result << temp
+                end
+                result = result.to_json(:except=>[:id]) if result
+              else
+                result = resp.to_json(:except=>[:id]) if resp
+              end
+
+            end
           end
         end
       end
       return result
     end
 
+    TABLE_NAME_BLACKLIST = ["user","routes"]
     QUERY_STRING_BLACKLIST = [
       'page',
       'per_page'

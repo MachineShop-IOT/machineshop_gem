@@ -115,8 +115,6 @@ module MachineShop
           klass = splitted[-2]
         end
       end
-      ap "returned from get_klass_from_url"
-      puts "#{id}, => #{klass}"
       return id,klass
     end
 

@@ -12,7 +12,7 @@ module MachineShop
 
       # ActiveRecord::Base.logger = Logger.new(STDOUT)
 
-      endpoints = MachineShop.get(url+"/#{version}/#{namespace}",auth_token)
+      endpoints = MachineShop.gem_get(url+"/#{version}/#{namespace}",auth_token)
 
       endpoints=endpoints.as_json
       endpoints = endpoints["#{version}"]["api"]

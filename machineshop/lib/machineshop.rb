@@ -39,7 +39,6 @@ require 'machineshop/utility'
 require 'machineshop/json'
 require 'machineshop/util'
 require 'machineshop/end_points'
-require 'machineshop/get'
 
 # Errors
 require 'machineshop/errors/machineshop_error'
@@ -84,19 +83,42 @@ module MachineShop
       @@api_base_url
     end
 
+    #     endpoint = ApiEndpoint.where(:verb=> verb).where(:endpoint=> "%#{name}%")
+
     def get(url, auth_token, body_hash=nil)
+      if valid_endpoint(url, :get)
+
+      end
       platform_request(url, auth_token, body_hash)
     end
 
-    def post(url, auth_token, body_hash)
+    def valid_endpoint(name,verb)
+      if Util.db_connected?
+        endpoint = ApiEndpoint.where(:verb=>verb).where("api_endpoints.endpoint LIKE :endpoint", {:endpoint => "%#{name}%"}).take(1)
+        # :endpoint=>"%#{name}%")
+        if !endpoint.empty?
+          ap endpoint[0].endpoint
+          return endpoint[0].endpoint
+        else
+          raise APIError.new("Invalid url request")
+          return false
+        end
+      end
+    end
+
+    def gem_get(url, auth_token, body_hash=nil)
+      platform_request(url, auth_token, body_hash)
+    end
+
+    def gem_post(url, auth_token, body_hash)
       platform_request(url, auth_token, body_hash, :post)
     end
 
-    def delete(url, auth_token, body_hash)
+    def gem_delete(url, auth_token, body_hash)
       platform_request(url, auth_token, body_hash, :delete)
     end
 
-    def put(url, auth_token, body_hash)
+    def gem_put(url, auth_token, body_hash)
       platform_request(url, auth_token, body_hash, :put)
     end
 

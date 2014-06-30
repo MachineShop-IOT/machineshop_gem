@@ -12,11 +12,11 @@ module MachineShop
     end
     
     def self.all_roles(auth_token)
-      MachineShop.get(self.role_url, auth_token)
+      MachineShop.gem_get(self.role_url, auth_token)
     end
     
     def all_roles
-      MachineShop.get(self.class.role_url, @auth_token)
+      MachineShop.gem_get(self.class.role_url, @auth_token)
     end       
     
     def device_instances(filters={})

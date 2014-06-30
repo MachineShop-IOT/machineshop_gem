@@ -1,6 +1,5 @@
 require_relative '../spec_helper'
 
-require 'machineshop/models/people'
 #MachineShop.api_base_url= 'http://machineshop.dev:3000/api/v0'
 MachineShop.api_base_url= 'http://stage.services.machineshop.io/api/v0'
 

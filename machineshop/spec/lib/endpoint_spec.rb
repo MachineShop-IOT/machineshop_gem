@@ -19,6 +19,7 @@ end
 # :email => publisher_username,
 # :password => publisher_password
 # )
+ActiveRecord::Base.logger = Logger.new(STDOUT)
 
 auth_token="2jzZmcHWLZyghsxcB16E"
 
@@ -26,8 +27,8 @@ describe MachineShop::EndPoints do
 
 
   it "should call get method " do 
-    # test = MachineShop::get("/gem/routes/v0",auth_token)
-      test = MachineShop::EndPoints.all("v0",auth_token)
+    test = MachineShop.get("gem",auth_token)
+      # test = MachineShop::EndPoints.all("v0",auth_token)
 
   # ap test.as_json
 

@@ -24,7 +24,7 @@ auth_token, user = MachineShop::User.authenticate(
 
 describe "test custome" do
   it "should test custom endpoints " do
-    rules = MachineShop.get("http://stage.services.machineshop.io/api/v0/platform/rule",auth_token)
+    rules = MachineShop.gem_get("http://stage.services.machineshop.io/api/v0/platform/rule",auth_token)
     # rules.should_not be_nil
     expect(rules).not_to be_nil
     ap rules.as_json

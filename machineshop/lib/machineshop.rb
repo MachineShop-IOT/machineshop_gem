@@ -83,29 +83,28 @@ module MachineShop
       @@api_base_url
     end
 
-    #     endpoint = ApiEndpoint.where(:verb=> verb).where(:endpoint=> "%#{name}%")
-
-    def get(url, auth_token, body_hash=nil)
-      if valid_endpoint(url, :get)
-
-      end
-      platform_request(url, auth_token, body_hash)
+    #For Custom endpoints
+    def get(name, auth_token, *params)
+      url = Util.valid_endpoint(name,auth_token,:get, params)
+      platform_request(url, auth_token, nil, :get)
     end
 
-    def valid_endpoint(name,verb)
-      if Util.db_connected?
-        endpoint = ApiEndpoint.where(:verb=>verb).where("api_endpoints.endpoint LIKE :endpoint", {:endpoint => "%#{name}%"}).take(1)
-        # :endpoint=>"%#{name}%")
-        if !endpoint.empty?
-          ap endpoint[0].endpoint
-          return endpoint[0].endpoint
-        else
-          raise APIError.new("Invalid url request")
-          return false
-        end
-      end
+    def post(name,auth_token, body_hash)
+      url = Util.valid_endpoint(name,auth_token,:post,[])
+      platform_request(url, auth_token,body_hash,:post)
     end
 
+    def put(name,auth_token,*params,body_hash)
+      url = Util.valid_endpoint(name,auth_token,:put,params)
+      platform_request(url, auth_token,body_hash,:put)
+    end
+
+    def delete(name,auth_token,*params)
+      url = Util.valid_endpoint(name,auth_token,:delete,params)
+      platform_request(url, auth_token, nil ,:delete)
+    end
+
+    #Call for the predefined request
     def gem_get(url, auth_token, body_hash=nil)
       platform_request(url, auth_token, body_hash)
     end
@@ -138,9 +137,7 @@ module MachineShop
         if Util.db_connected?
 
           ApiRequest.cache(url, auth_token, MachineShop.configuration.expiry_time) do
-
             puts "Not expired , calling from local "
-
             rbody = get_from_cache(url,body_hash,auth_token)
             rcode="200"
           end
@@ -212,9 +209,6 @@ module MachineShop
         # puts rbody
         rcode = response.code
       end
-
-
-
 
       begin
         # Would use :symbolize_names => true, but apparently there is

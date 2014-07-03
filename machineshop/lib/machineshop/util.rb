@@ -11,7 +11,7 @@ module MachineShop
       when Array
         h.map { |v| objects_to_ids(v) }
       else
-      h
+        h
       end
     end
 
@@ -33,12 +33,12 @@ module MachineShop
       when Hash
         # Try converting to a known object class.  If none available, fall back to generic APIResource
         if klass_name = type
-        klass = types[klass_name]
+          klass = types[klass_name]
         end
         klass ||= MachineShopObject
         klass.construct_from(resp, auth_token)
       else
-      resp
+        resp
       end
     end
 
@@ -48,7 +48,7 @@ module MachineShop
       rescue
         false
       else
-      true
+        true
       end
     end
 
@@ -64,7 +64,7 @@ module MachineShop
       when Array
         object.map { |value| symbolize_names(value) }
       else
-      object
+        object
       end
     end
 
@@ -134,6 +134,50 @@ module MachineShop
       db_connected
     end
 
+
+    def self.valid_endpoint(name,auth_token,verb,params)
+      if Util.db_connected?
+        endpoints_upto_date=false
+
+        ApiRequest.cache("/gem/routes/#{MachineShop.configuration.base_version}", auth_token, MachineShop.configuration.custom_endpoints_cache_time) do
+          #time not expired, cached routes are oke
+          endpoints_upto_date = true
+        end
+
+        if !endpoints_upto_date
+          #request the endpoints
+          MachineShop::EndPoints.all(MachineShop.configuration.base_version,auth_token)
+
+        end
+
+        endpoint = ApiEndpoint.where(:verb=>verb).where(:auth_token=>auth_token).where("api_endpoints.endpoint LIKE :endpoint", {:endpoint => "/#{name}%"}).take(1)
+        if !endpoint.empty?
+          splitEndpoints = (endpoint[0].endpoint).split("/").reject{|val| val=="" }
+          if splitEndpoints[0]==name
+            url="/"
+            key=0
+            splitEndpoints.each do |v|
+              if v.start_with? ":" #parameter
+                if params[key]
+                  url+=params[key]
+                  key+=1
+                else
+                  raise APIError.new("Invalid parameters, Please provide value for #{v}")
+                end
+              else
+                url+="#{v}/"
+              end
+            end
+            # ap "finally #{url}"
+
+          end
+          return url
+        else
+          raise APIError.new("Invalid url request")
+          return false
+        end
+      end
+    end
 
   end
 end

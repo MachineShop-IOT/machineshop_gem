@@ -4,7 +4,7 @@ module MachineShop
     # Specific API calls
     def self.authenticate(user_hash)
       #user_hash is => { email: email, password: password }
-      response = MachineShop.post(authenticate_url, nil, user_hash)            
+      response = MachineShop.gem_post(authenticate_url, nil, user_hash)            
       auth_token = response[:authentication_token]
       id = response[:_id]
       

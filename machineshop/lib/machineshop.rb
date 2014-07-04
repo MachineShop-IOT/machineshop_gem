@@ -147,7 +147,7 @@ module MachineShop
       if (rbody.nil? || rbody.empty?)
         cachedContent=:false
         ap "Not found in local, calling from API"
-        ap "body_hash: #{body_hash}"
+        # ap "body_hash: #{body_hash}"
         opts = nil
         api_uri = api_base_url + url
         headers = self.headers(auth_token)
@@ -179,8 +179,6 @@ module MachineShop
         end
 
         puts "request params: #{opts} "
-
-
 
         begin
           response = execute_request(opts)

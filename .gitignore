@@ -18,3 +18,26 @@ tmp
 ../.project
 .project
 
+# Ignore all logfiles and tempfiles.
+/log/*.log
+/tmp
+
+# Ignore all mac metadata files and emacs autosaves
+auto-save-list
+custom.el
+url/
+.org-id-locations
+\#*
+org-mode-config.el
+*~
+.#*
+\#*\#
+*.log
+.DS_Store
+org-clock-save.el
+emacs-config.el
+
+# Ignore rvm
+.rvmrc
+.project
+nbproject/

@@ -1,7 +1,5 @@
 require_relative '../spec_helper'
 
-#MachineShop.api_base_url= 'http://machineshop.dev:3000/api/v0'
-MachineShop.api_base_url= 'http://stage.services.machineshop.io/api/v0'
 
 #publisher_username = 'publisher@machineshop.com'
 publisher_username = 'publisher@csr.com'
@@ -19,6 +17,8 @@ describe MachineShop::Report do
     it "should get all report data" do
     element_data = MachineShop::Report.all({}, auth_token)
 reports=element_data
+
+puts "yaaaaaaaaaaaaaaaaaaaaa"
     puts "element_data: #{element_data}"
 
     element_data.should_not be_nil

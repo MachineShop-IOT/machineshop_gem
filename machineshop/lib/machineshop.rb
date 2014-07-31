@@ -50,6 +50,7 @@ module MachineShop
   class << self
     # @@api_base_url = 'http://api.machineshop.io/api/v0'
     @@api_base_url = 'http://stage.services.machineshop.io/api/v0'
+    # @@api_base_url = 'https://services.machineshop.io/api/v0'
 
     #configs starts
     attr_writer :configuration

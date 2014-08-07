@@ -16,7 +16,6 @@ publisher_password = 'password'
 describe MachineShop::Mapping do
 
    it "should get a geocoded address" do
-    ap "geocoding address"
     element_data = MachineShop::Mapping.geocode(
         {
             :address => "1600 Amphitheatre Parkway, Mountain View, CA",
@@ -24,15 +23,11 @@ describe MachineShop::Mapping do
         },
         auth_token)
 
-ap element_data.as_json
-    #puts "GEO: #{element_data}"
-
     element_data.should_not be_nil
     element_data.should_not be_empty
   end
 
   it "should get directions" do
-    ap "getting directions"
     element_data = MachineShop::Mapping.directions(
         {
             :origin => "Denver",
@@ -40,15 +35,12 @@ ap element_data.as_json
             :sensor => "false"
         },
         auth_token)
-# ap element_data.as_json
-    #puts "GEO: #{element_data}"
 
     element_data.should_not be_nil
     element_data.should_not be_empty
   end
 
   it "should get distance" do
-    ap "getting distance "
     element_data = MachineShop::Mapping.distance(
         {
             :origins => "Vancouver BC",
@@ -58,9 +50,6 @@ ap element_data.as_json
             :sensor => "false"
         },
         auth_token)
-ap element_data.as_json
-    #puts "GEO: #{element_data}"
-
     element_data.should_not be_nil
     element_data.should_not be_empty
   end

@@ -1,9 +1,5 @@
 ActiveRecord::Schema.define do
-    # puts ActiveRecord::Schema.new.migrations_paths
     self.verbose = false
-    # change_table(:device_caches) do |t|
-    #     t.column :auth_token, :string, limit: 60
-    # end
 
     create_table :device_instance_caches do |t|
         t.string :_id

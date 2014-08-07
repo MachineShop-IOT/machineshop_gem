@@ -19,8 +19,6 @@ auth_token, user = MachineShop::User.authenticate(
 :email => publisher_username,
 :password => publisher_password
 )
-# ap user
-
 
 describe MachineShop::Device do
 
@@ -37,8 +35,6 @@ describe MachineShop::Device do
     },
     auth_token)
 
-    ap "listing all devices"
-    puts element_data.as_json
     device = element_data[0]
     device.should_not be_nil
     device.should be_kind_of MachineShop::Device

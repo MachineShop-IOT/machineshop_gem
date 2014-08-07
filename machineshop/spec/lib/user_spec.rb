@@ -19,8 +19,6 @@ describe MachineShop::User do
         :password => publisher_password
     )
 
-    ap "User Data"
-    ap user.as_json
     auth_token.should_not be_nil
     user.should_not be_nil
     user.should be_kind_of MachineShop::User
@@ -29,26 +27,17 @@ describe MachineShop::User do
   it "should get all roles from a static instance" do
     element_data = MachineShop::User.all_roles(auth_token)
 
-    ap "all_roles: "
-    ap element_data.as_json
-    puts element_data
-
     element_data.should_not be_nil
   end
 
   it "should get all roles from a user instance" do
 
-    ap " here user is : "
-    ap user.as_json
     element_data = user.all_roles
     element_data.should_not be_nil
   end
 
   it "should get a user for the user by id" do
     element_data = MachineShop::User.retrieve(user.id, auth_token)
-
-    ap "user retrieve"
-    ap element_data.as_json
 
     element_data.should_not be_nil
     element_data.should be_kind_of MachineShop::User

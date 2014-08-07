@@ -13,7 +13,6 @@ class ApiRequest < ActiveRecord::Base
 
 
 	def cache(cache_policy)
-		# puts "updated_at -- #{updated_at}    #{cache_policy.call.utc}  now=>  #{cache_policy.call}"
 		if new_record?
 			update_attributes(updated_at: Time.now.utc)
 		end
@@ -21,7 +20,6 @@ class ApiRequest < ActiveRecord::Base
 		if updated_at < cache_policy.call.utc
 			update_attributes(updated_at: Time.now.utc)
 		else
-			# puts "Not expired"
 			yield
 		end
 	end

@@ -21,4 +21,6 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'addressable'
   gem.add_dependency 'rest-client'#, '~> 1.6.7'
   gem.add_dependency('multi_json', '>= 1.0.4', '< 2')
+  gem.add_dependency('activerecord', '>= 4.1.1')
+  gem.required_ruby_version = '>= 1.9.3'
 end

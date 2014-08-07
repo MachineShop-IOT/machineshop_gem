@@ -12,7 +12,6 @@ publisher_password = 'password'
 describe "#expiry_time" do
   it "default value is 6" do
     MachineShop::Configuration.new.expiry_time =23
-    # puts "original value is #{MachineShop::Configuration.expiry_time}"
   end
 end
 
@@ -32,7 +31,6 @@ describe "#expiry_time=" do
 
     config.expiry_time = 7
     expect(config.expiry_time).to eq(7)
-    puts "config.expiry_time #{config.expiry_time}"
   end
 
   it "should use activeRecord to create new record" do
@@ -41,6 +39,5 @@ describe "#expiry_time=" do
   it "stores into database" do
     db = MachineShop::Database.new
     rec = People.find_by(first_name: 'niroj')
-    ap rec.as_json
   end
 end

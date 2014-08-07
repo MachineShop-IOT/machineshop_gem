@@ -30,8 +30,6 @@ describe MachineShop::Device do
          :per_page => 10},
         auth_token)
 
-    ap "listing all devices"
-    puts element_data
     device = element_data[0]
     device.should_not be_nil
     device.should be_kind_of MachineShop::Device
@@ -43,8 +41,6 @@ specificDevice = nil
   it "should get a device for the user by id" do
     specificDevice = MachineShop::Device.retrieve(device[:id], auth_token)
 
-    ap "Device by id"
-    ap specificDevice.as_json
     specificDevice.should_not be_nil
     specificDevice.should be_kind_of MachineShop::Device
   end
@@ -54,8 +50,6 @@ specificDevice = nil
   it "should delete device" do
     delete = specificDevice.delete
 
-    ap "Delete Device by id"
-    ap delete.as_json
     delete.http_code.should eq 200
   end
 
@@ -98,8 +92,6 @@ describe MachineShop::DeviceInstance do
         },
         auth_token)
 
-    ap "device created:"
-    ap device.as_json
 
     # Now create an instance
     device_instance = device.create_instance(
@@ -109,9 +101,6 @@ describe MachineShop::DeviceInstance do
         }
     )
 
-    ap "creating device instance"
-    ap device_instance.as_json
-
     device_instance.should_not be_nil
     device_instance.should be_kind_of MachineShop::DeviceInstance
   end
@@ -119,10 +108,6 @@ describe MachineShop::DeviceInstance do
 
   it "should get device instances" do
     element_data = MachineShop::DeviceInstance.all({}, auth_token)
-
-    ap "getting all device instances"
-
-    ap device_instance.as_json
 
     device_instance = element_data[0]
     element_data.should_not be_nil
@@ -135,9 +120,6 @@ describe MachineShop::DeviceInstance do
   it "should get a device instance by id" do
     element_data = MachineShop::DeviceInstance.retrieve("5395835f385f7f53ec000160", auth_token)
 
-    ap "Device Instance by id: "
-    ap element_data.as_json
-
     element_data.should_not be_nil
     element_data.should be_kind_of MachineShop::DeviceInstance
   end
@@ -145,18 +127,12 @@ describe MachineShop::DeviceInstance do
   it "should get a device instance by name" do
     element_data = MachineShop::DeviceInstance.all({:name => device_instance.name}, auth_token)
 
-    ap "Device Instance by name: "
-    ap element_data.as_json
-
     element_data.should_not be_nil
     element_data.should_not be_empty
   end
 
   it "should get all devices via a user" do
     element_data = user.device_instances
-
-    ap "Device Instance via user "
-    ap element_data.as_json
 
     element_data.should_not be_nil
     element_data.should_not be_empty

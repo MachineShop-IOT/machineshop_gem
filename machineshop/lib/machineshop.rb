@@ -115,8 +115,6 @@ module MachineShop
 
           ApiRequest.cache(url, auth_token, MachineShop.configuration.expiry_time) do
 
-            puts "Not expired , calling from local "
-
             rbody = get_from_cache(url,body_hash,auth_token)
             rcode="200"
           end
@@ -125,8 +123,6 @@ module MachineShop
       end
       if (rbody.nil? || rbody.empty?)
         cachedContent=:false
-        ap "Not found in local, calling from API"
-        ap "body_hash: #{body_hash}"
         opts = nil
         api_uri = api_base_url + url
         headers = self.headers(auth_token)
@@ -157,10 +153,6 @@ module MachineShop
 
         end
 
-        puts "request params: #{opts} "
-
-
-
         begin
           response = execute_request(opts)
 
@@ -185,7 +177,6 @@ module MachineShop
         end
 
         rbody = response.body
-        # puts rbody
         rcode = response.code
       end
 
@@ -259,7 +250,6 @@ module MachineShop
         message = "Unexpected error communicating with MachineShop"
       end
       message += "\n\n(Network error: #{e.message})"
-      # puts "error message string : #{message}"
       raise APIConnectionError.new(message)
     end
 
@@ -281,10 +271,8 @@ module MachineShop
       begin
         MachineShop::Database.new
       rescue DatabaseError =>e
-        # puts e.message
         db_connected= false
       rescue SchemaError =>e
-        # puts e.message
         # db_connected=true
       end
 
@@ -293,17 +281,11 @@ module MachineShop
 
 
     def save_into_cache(url, data,auth_token)
-      # ap "inside save into cache"
       if db_connected?
 
         id=nil
         splitted = url.split('/')
         klass = splitted[-1]
-
-        # if /[0-9]/.match(klass)
-        #   klass = splitted[-2]
-        #   id=splitted[-1]
-        # end
 
         if /[0-9]/.match(klass)
           id=splitted[-1]
@@ -318,16 +300,12 @@ module MachineShop
 
 
         klass = klass.capitalize+"Cache"
-        puts "creating dynamic class #{klass}"
-
-
         modelClass ||= (Object.const_set klass, Class.new(ActiveRecord::Base))
         modelClass.inheritance_column = :_type_disabled
         #Because 'type' is reserved for storing the class in case of inheritance and our array has "TYPE" key
 
         if ActiveRecord::Base.connection.table_exists? CGI.escape(klass.pluralize.underscore)
 
-          puts "db table #{klass.pluralize.underscore} exists"
           if data.class ==Hash
 
             findId = data[:_id] || data["_id"]
@@ -353,8 +331,6 @@ module MachineShop
               if data_arr
 
                 if data_arr.first.class==String && data_arr.class==Array
-                  ap data_arr.as_json
-
                   @activeObject = modelClass.find_by(rule_condition: data_arr.select{|k| k.include?("rule_condition")})  || modelClass.new
                   data_arr.each do |k|
 
@@ -401,8 +377,6 @@ module MachineShop
 
 
     def get_from_cache(url, body_hash,auth_token)
-      # ap "inside get_from_cache"
-
       result =Array.new
       if db_connected?
 
@@ -429,7 +403,6 @@ module MachineShop
 
         data_exist=false
         if ActiveRecord::Base.connection.table_exists? CGI.escape(klass.pluralize.underscore)
-          puts "db:table #{klass.pluralize} exists"
           resp= nil
           if id
             resp = modelClass.find_by(_id: id, auth_token: auth_token)

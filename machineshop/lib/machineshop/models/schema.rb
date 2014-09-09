@@ -1,6 +1,33 @@
 ActiveRecord::Schema.define do
     self.verbose = false
 
+
+
+
+    create_table :data_sources_caches do |t|
+        t.string :_id
+        t.string :_type
+        t.string :type
+        t.string :last_checked_datetime
+        t.string :name
+        t.string :user_name
+        t.string :sender
+        t.string :encrypted_password
+        t.string :pop_server
+        t.string :port
+        t.string :user_id
+        t.string :auth_token
+        t.string :data_source_type_id
+        t.string :updated_at
+        t.string :created_at
+        t.text :data_source_type
+        t.string :last_report
+        t.string :report_count
+        t.string :active
+
+    end
+
+
     create_table :device_instance_caches do |t|
         t.string :_id
         t.string :alert_count

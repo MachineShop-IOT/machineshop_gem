@@ -1,7 +1,7 @@
 require "machineshop/version"
 
-require 'awesome_print'
-require 'will_paginate'
+# require 'awesome_print'
+# require 'will_paginate'
 
 require 'cgi'
 require 'set'
@@ -27,6 +27,10 @@ require 'machineshop/api_operations/update'
 require 'machineshop/machineshop_object'
 require 'machineshop/api_resource'
 require 'machineshop/device_instance'
+
+require 'machineshop/data_sources'
+
+
 require 'machineshop/device'
 require 'machineshop/machineshop_object'
 require 'machineshop/mapping'
@@ -34,7 +38,8 @@ require 'machineshop/meter'
 require 'machineshop/report'
 require 'machineshop/customer'
 require 'machineshop/rule'
-require 'machineshop/user'
+# require 'machineshop/user'
+require 'machineshop/users'
 require 'machineshop/utility'
 require 'machineshop/json'
 require 'machineshop/util'
@@ -54,7 +59,7 @@ require 'machineshop/models/api_request'
 module MachineShop
   class << self
     # @@api_base_url = 'http://api.machineshop.io/api/v0'
-    @@api_base_url = 'http://stage.services.machineshop.io/api/v0'
+    @@api_base_url = 'http://stage.services.machineshop.io/api/v1'
 
     #configs starts
     attr_writer :configuration
@@ -112,7 +117,6 @@ module MachineShop
       if http_verb==:get
 
         if db_connected?
-
           ApiRequest.cache(url, auth_token, MachineShop.configuration.expiry_time) do
 
             rbody = get_from_cache(url,body_hash,auth_token)
@@ -189,9 +193,7 @@ module MachineShop
         resp = MachineShop::JSON.load(rbody)
         resp ||= {}
         resp = Util.symbolize_names(resp)
-
         save_into_cache(url,resp,auth_token) if (http_verb == :get && cachedContent==:false)
-
         resp.merge!({:http_code => rcode}) if resp.is_a?(Hash)
         return resp
       rescue MultiJson::DecodeError
@@ -286,18 +288,14 @@ module MachineShop
         id=nil
         splitted = url.split('/')
         klass = splitted[-1]
-
         if /[0-9]/.match(klass)
           id=splitted[-1]
-
           if splitted[-3]=="rule"
             klass="rule"
           else
             klass = splitted[-2]
           end
-
         end
-
 
         klass = klass.capitalize+"Cache"
         modelClass ||= (Object.const_set klass, Class.new(ActiveRecord::Base))
@@ -305,15 +303,14 @@ module MachineShop
         #Because 'type' is reserved for storing the class in case of inheritance and our array has "TYPE" key
 
         if ActiveRecord::Base.connection.table_exists? CGI.escape(klass.pluralize.underscore)
-
           if data.class ==Hash
 
             findId = data[:_id] || data["_id"]
             @activeObject = modelClass.find_by(_id: findId) || modelClass.new
+
             data.each do |k,v|
 
               val=nil
-
               if v.class==Array
                 val = v.to_json
               elsif v.class==Hash
@@ -321,52 +318,49 @@ module MachineShop
               else
                 val=v
               end
-            @activeObject.send("#{k}=",val)
+              if @activeObject.has_attribute?(k)
+                @activeObject.send("#{k}=",val)
+              end
             end
 
 
           else
             data.each do |data_arr|
-
               if data_arr
-
                 if data_arr.first.class==String && data_arr.class==Array
                   @activeObject = modelClass.find_by(rule_condition: data_arr.select{|k| k.include?("rule_condition")})  || modelClass.new
                   data_arr.each do |k|
-
                     if k.include?("rule_condition")
                       @activeObject.rule_condition = k
                     else
                       @activeObject.rule_description=k
                     end
                   end
-
-
                 else
                   if data_arr.class!=String
-                  findId = data_arr[:_id] || data_arr["_id"]
-                  @activeObject = modelClass.find_by(_id: findId) || modelClass.new
-                  data_arr.each do |k,v|
+                    findId = data_arr[:_id] || data_arr["_id"]
+                    @activeObject = modelClass.find_by(_id: findId) || modelClass.new
+                    data_arr.each do |k,v|
+                      val=nil
+                      if v.class==Array
+                        val = v.to_json
+                      elsif v.class==Hash
+                        val = v.to_json
+                      else
+                        val=v
+                      end
 
-                    val=nil
+                      #check if the database has the particular field to store
+                      if @activeObject.has_attribute?(k)
+                        @activeObject.send("#{k}=",val)
+                      end
 
-                    if v.class==Array
-                      val = v.to_json
-                    elsif v.class==Hash
-                      val = v.to_json
-                    else
-                      val=v
                     end
-
-                    @activeObject.send("#{k}=",val)
                   end
-                end
                 end
               end
             end
           end
-
-
           @activeObject.send("auth_token=",auth_token)
           @activeObject.save
         end

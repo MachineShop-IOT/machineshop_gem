@@ -2,7 +2,7 @@ module MachineShop
   class DataSources < APIResource
     include MachineShop::APIOperations::List
     include MachineShop::APIOperations::Create
-    include MachineShop::APIOperations::Delete
+    # include MachineShop::APIOperations::Delete
     
     # Specific API calls
     
@@ -20,17 +20,26 @@ module MachineShop
       MachineShop::Meter.all(filters, @auth_token)
     end
 
-     def create_data_source(params)
-      ap "inside create_data_source"
-      ap params
-      params.merge!({:device_id => self.id})
-      DeviceInstance.create(params, @auth_token)
+
+    def delete
+      MachineShop.delete('/platform/data_sources/#{self.id}?_type=#{self._type}', @auth_token,{})
     end
 
-    def create_email_data_source(params)
-      params.merge!({:device_id => self.id})
-      DeviceInstance.create(params, @auth_token)
-    end
+
+
+
+
+    #  def create_data_source(params)
+    #   ap "yaha aayo "
+    #   params.merge!({:data_source_type => self.id})
+    #   ap params
+    #   DataSources.create(params, @auth_token)
+    # end
+
+    # def create_email_data_source(params)
+    #   params.merge!({:device_id => self.id})
+    #   DeviceInstance.create(params, @auth_token)
+    # end
 
     
     private
@@ -39,5 +48,5 @@ module MachineShop
       url + '/report_count'
     end
 
-  end
+end
 end

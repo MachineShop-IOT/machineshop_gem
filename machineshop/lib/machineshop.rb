@@ -29,6 +29,7 @@ require 'machineshop/api_resource'
 require 'machineshop/device_instance'
 
 require 'machineshop/data_sources'
+require 'machineshop/data_source_types'
 
 
 require 'machineshop/device'
@@ -321,10 +322,12 @@ module MachineShop
               if @activeObject.has_attribute?(k)
                 @activeObject.send("#{k}=",val)
               end
+              @activeObject.save
             end
 
 
           else
+            ap "yaha ? "
             data.each do |data_arr|
               if data_arr
                 if data_arr.first.class==String && data_arr.class==Array
@@ -359,10 +362,10 @@ module MachineShop
                   end
                 end
               end
-            end
-          end
           @activeObject.send("auth_token=",auth_token)
           @activeObject.save
+            end
+          end
         end
       end
 

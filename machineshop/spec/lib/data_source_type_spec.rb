@@ -2,8 +2,6 @@ require_relative '../spec_helper'
 
 #MachineShop.api_base_url= 'http://machineshop.dev:3000/api/v0'
 MachineShop.api_base_url= 'http://localhost:3000/api/v1'
-
-#publisher_username = 'publisher@machineshop.com'
 publisher_username = 'publisher@csr.com'
 publisher_password = 'password'
 
@@ -30,17 +28,17 @@ specific_data_source = nil
 
 data_source = nil
 
-  # it "should get all DataSource types for the user" do
-  #   element_data = MachineShop::DataSourceTypes.all(
-  #       {:page => 1,
-  #        :per_page => 10},
-  #       auth_token)
+  it "should get all DataSource types for the user" do
+    element_data = MachineShop::DataSourceTypes.all(
+        {:page => 1,
+         :per_page => 10},
+        auth_token)
 
-  #   ap element_data
+    ap element_data
 
-  #   data_source = element_data[0]
-  #   expect(data_source).to be_truthy
-  # end
+    data_source = element_data[0]
+    expect(data_source).to be_truthy
+  end
 
 
   it "should create data_source_type" do 
@@ -67,18 +65,6 @@ data_source = nil
       )
   end
 
-  # ({:email=>"bajratests@bajratechnologies.com",
-  #     :password=>'password',
-  #     :notification_method=>'sms',
-  #     :first_name=>'niroj',:last_name=>'sapkota',
-  #     :phone_number=>'98989898989',
-  #     :company_name=>'technology co'
-
-  #   },auth_token)
-
-
-
-
   # it "should get a data_source for the user by id" do
   #   specific_data_source = MachineShop::DataSources.retrieve(data_source.id, auth_token)
 
@@ -86,26 +72,6 @@ data_source = nil
 
   #   specific_data_source.should_not be_nil
   #   # specific_data_source.should be_kind_of MachineShop::DataSources
-  # end
-
-
-#   it "should create data_source" do 
-#     data_source_instance = specific_data_source.create_instance(
-#     {
-#         :name => "My little instance",
-#         :active => "yes"
-#     }
-
-
-# )
-
-#   end
-
-
-
-  # it "should get instances of data_source data_source" do
-  #   ins = specific_data_source.instances
-
   # end
 
 end

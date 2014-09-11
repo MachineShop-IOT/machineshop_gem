@@ -37,23 +37,24 @@ describe MachineShop::DataSources do
     :per_page => 10},
     auth_token)
 
-    ap element_data
-
     data_source = element_data[0]
-    # ap data_source
     expect(data_source).to be_truthy
-    # data_source.should be_kind_of MachineShop::DataSources
   end
 
 
+  it "should update the DataSource " do
+    toUpdate = MachineShop::DataSources.retrieve(data_source.id, auth_token)
+
+    update = toUpdate.update({:name => "updated name"})
+
+  end
+
   it "should delete datasource" do
     toDelete = MachineShop::DataSources.retrieve(data_source.id,auth_token)
-    ap toDelete
-
-    ap "deleting #{toDelete.id}"
+    # ap toDelete
 
     deleted = toDelete.delete
-    ap deleted
+    # ap deleted
   end
 
 
@@ -63,18 +64,10 @@ describe MachineShop::DataSources do
     {:page => 1,
     :per_page => 10},
     auth_token)
-
-    # ap element_data
-
     data_source_type = element_data[0]
-
   end
 
-
-
   it "should retrieve DataSource " do
-
-
     specificDataSource = MachineShop::DataSourceTypes.retrieve(data_source_type.id, auth_token)
 
     data_source = specificDataSource.create_data_source(

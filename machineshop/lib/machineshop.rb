@@ -327,7 +327,6 @@ module MachineShop
 
 
           else
-            ap "yaha ? "
             data.each do |data_arr|
               if data_arr
                 if data_arr.first.class==String && data_arr.class==Array

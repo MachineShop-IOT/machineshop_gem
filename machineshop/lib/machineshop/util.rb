@@ -23,7 +23,8 @@ module MachineShop
         'Meter' => Meter,
         'Report' => Report,
         'Rule' => Rule,
-        'User' => User,
+        # 'User' => User,
+        'Users' => Users,
         'Utility' => Utility,
         'Customer'=> Customer
       }

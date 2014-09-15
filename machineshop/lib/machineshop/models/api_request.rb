@@ -4,6 +4,7 @@ class ApiRequest < ActiveRecord::Base
 	# validates: url, presence: true, uniqueness: true
 
 	def self.cache(url,auth_token, cache_policy)
+		ap "cache_policy is #{cache_policy.call}"
 		find_or_initialize_by(url: url, auth_token:auth_token).cache(cache_policy) do
 			if block_given?
 				yield

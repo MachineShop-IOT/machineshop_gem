@@ -34,11 +34,15 @@ require 'machineshop/meter'
 require 'machineshop/report'
 require 'machineshop/customer'
 require 'machineshop/rule'
-require 'machineshop/user'
+# require 'machineshop/user'
+require 'machineshop/users'
 require 'machineshop/utility'
 require 'machineshop/json'
 require 'machineshop/util'
 require 'machineshop/end_points'
+
+require 'machineshop/data_sources'
+require 'machineshop/data_source_types'
 
 # Errors
 require 'machineshop/errors/machineshop_error'
@@ -135,18 +139,22 @@ module MachineShop
       if http_verb==:get
 
         if Util.db_connected?
+          xpired=true
 
           ApiRequest.cache(url, auth_token, MachineShop.configuration.expiry_time) do
+            xpired=false
             puts "Not expired , calling from local "
             rbody = get_from_cache(url,body_hash,auth_token)
             rcode="200"
           end
+
+          ap "expired = #{xpired}"
         end
 
       end
       if (rbody.nil? || rbody.empty?)
         cachedContent=:false
-        ap "Not found in local, calling from API"
+        # ap "Not found in local, calling from API"
         # ap "body_hash: #{body_hash}"
         opts = nil
         api_uri = api_base_url + url
@@ -305,11 +313,15 @@ module MachineShop
 
           if ActiveRecord::Base.connection.table_exists? CGI.escape(klass.pluralize.underscore)
 
+            #delete all the previous records
+
+            modelClass.delete_all
             puts "db table #{klass.pluralize.underscore} exists"
             if data.class ==Hash
 
               findId = data[:_id] || data["_id"]
-              @activeObject = modelClass.find_by(_id: findId) || modelClass.new
+              @activeObject = modelClass.new
+              # @activeObject = modelClass.find_by(_id: findId) || modelClass.new
               data.each do |k,v|
 
                 val=nil
@@ -321,7 +333,10 @@ module MachineShop
                 else
                   val=v
                 end
-                @activeObject.send("#{k}=",val)
+                if @activeObject.has_attribute?(k)
+                  @activeObject.send("#{k}=",val)
+                end
+                @activeObject.save
               end
 
 
@@ -359,18 +374,18 @@ module MachineShop
                         else
                           val=v
                         end
-
-                        @activeObject.send("#{k}=",val)
+                        #check if the database has the particular field to store
+                        if @activeObject.has_attribute?(k)
+                          @activeObject.send("#{k}=",val)
+                        end
                       end
                     end
                   end
                 end
+                @activeObject.send("auth_token=",auth_token)
+                @activeObject.save
               end
             end
-
-
-            @activeObject.send("auth_token=",auth_token)
-            @activeObject.save
 
           end #if ActiveRecord ends
 

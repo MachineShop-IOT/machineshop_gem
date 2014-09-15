@@ -15,6 +15,59 @@ ActiveRecord::Schema.define do
     add_index :api_endpoints, [:verb,:endpoint], unique=>true
 
 
+    create_table :data_source_types_caches do |t|
+        t.string :_id
+        t.string :active
+        t.string :type
+        t.string :exe_path
+        t.string :name
+        t.string :image_url
+        t.string :init_cmd
+        t.string :init_params
+        t.string :last_known_translator_port
+        t.string :long_description
+        t.string :user_id
+        t.string :manual_url
+        t.string :manufacturer
+        t.string :updated_at
+        t.string :created_at
+        t.string :deleted_at
+        t.string :model
+        t.string :payload
+        t.string :rule_ids
+        t.string :sample_data
+        t.string :software
+        t.string :translator
+        t.string :unit_price
+        t.string :auth_token
+
+    end
+
+    create_table :data_sources_caches do |t|
+        t.string :_id
+        t.string :_type
+        t.string :type
+        t.string :last_checked_datetime
+        t.string :name
+        t.string :user_name
+        t.string :sender
+        t.string :encrypted_password
+        t.string :pop_server
+        t.string :port
+        t.string :user_id
+        t.string :auth_token
+        t.string :data_source_type_id
+        t.string :updated_at
+        t.string :created_at
+        t.text :data_source_type
+        t.string :last_report
+        t.string :report_count
+        t.string :active
+
+    end
+    
+
+
     create_table :device_instance_caches do |t|
         t.string :_id
         t.string :alert_count

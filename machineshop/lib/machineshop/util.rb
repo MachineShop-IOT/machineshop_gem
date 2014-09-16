@@ -169,8 +169,6 @@ module MachineShop
                 url+="#{v}/"
               end
             end
-            # ap "finally #{url}"
-
           end
           return url
         else

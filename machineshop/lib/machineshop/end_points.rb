@@ -20,7 +20,6 @@ module MachineShop
       if Util.db_connected?
         endpoints.each do |endpoint|
           apiend = ApiEndpoint.find_or_initialize_by(verb: endpoint['verb'], endpoint:endpoint['endpoint'], auth_token: auth_token)
-          # ap apiend.as_json
           apiend.save
 
         end

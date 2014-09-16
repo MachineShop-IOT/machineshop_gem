@@ -1,7 +1,7 @@
 require "machineshop/version"
 
-require 'awesome_print'
-require 'will_paginate'
+# require 'awesome_print'
+# require 'will_paginate'
 
 require 'cgi'
 require 'set'
@@ -147,15 +147,11 @@ module MachineShop
             rbody = get_from_cache(url,body_hash,auth_token)
             rcode="200"
           end
-
-          ap "expired = #{xpired}"
         end
 
       end
       if (rbody.nil? || rbody.empty?)
         cachedContent=:false
-        # ap "Not found in local, calling from API"
-        # ap "body_hash: #{body_hash}"
         opts = nil
         api_uri = api_base_url + url
         headers = self.headers(auth_token)
@@ -298,7 +294,6 @@ module MachineShop
 
 
     def save_into_cache(url, data,auth_token)
-      # ap "inside save into cache"
       id,klass= Util.get_klass_from_url(url)
       if !TABLE_NAME_BLACKLIST.include?(klass)
         if Util.db_connected?
@@ -346,8 +341,6 @@ module MachineShop
                 if data_arr
 
                   if data_arr.first.class==String && data_arr.class==Array
-                    ap data_arr.as_json
-
                     @activeObject = modelClass.find_by(rule_condition: data_arr.select{|k| k.include?("rule_condition")})  || modelClass.new
                     data_arr.each do |k|
 
@@ -395,17 +388,9 @@ module MachineShop
 
 
     def get_from_cache(url, body_hash,auth_token)
-      ap "inside get_from_cache"
-
       result =Array.new
       id,klass= Util.get_klass_from_url(url)
-      ap "klass from URL "
-      ap klass
-
       if !TABLE_NAME_BLACKLIST.include?(klass)
-        ap "inside whitelist"
-
-
         if Util.db_connected?
 
           klass = klass.capitalize+"Cache"

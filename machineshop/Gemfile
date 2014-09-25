@@ -4,6 +4,6 @@ source 'https://rubygems.org'
 gemspec
 
 # gem "mysql"
-gem "activerecord", '~> 3.2.12'
+gem "activerecord"
 gem "awesome_print"
 gem 'will_paginate'

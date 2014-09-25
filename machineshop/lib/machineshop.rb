@@ -31,7 +31,8 @@ require 'machineshop/device'
 require 'machineshop/machineshop_object'
 require 'machineshop/mapping'
 require 'machineshop/meter'
-require 'machineshop/report'
+require 'machineshop/reports'
+# require 'machineshop/report'
 require 'machineshop/customer'
 # require 'machineshop/rule'
 require 'machineshop/rules'
@@ -140,10 +141,8 @@ module MachineShop
       if http_verb==:get
 
         if Util.db_connected?
-          xpired=true
 
           ApiRequest.cache(url, auth_token, MachineShop.configuration.expiry_time) do
-            xpired=false
             puts "Not expired , calling from local "
             rbody = get_from_cache(url,body_hash,auth_token)
             rcode="200"

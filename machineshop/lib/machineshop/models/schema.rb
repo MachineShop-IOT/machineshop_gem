@@ -109,6 +109,7 @@ ActiveRecord::Schema.define do
         t.string :stale
         t.string :updated_at
         t.string :auth_token
+        t.string :data_source_id
     end
 
     create_table :comparison_rule_conditions_caches do |t|

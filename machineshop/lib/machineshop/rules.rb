@@ -3,6 +3,7 @@ module MachineShop
     include MachineShop::APIOperations::List
     include MachineShop::APIOperations::Create
     include MachineShop::APIOperations::Delete
+    include MachineShop::APIOperations::Update
 
     def self.platform_url
       '/platform'

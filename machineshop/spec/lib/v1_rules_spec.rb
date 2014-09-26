@@ -78,6 +78,25 @@ describe MachineShop::Rules do
 
   end
 
+  it "should edit rule " do 
+
+    edit_rule_json = {
+      :rule=>{
+          :description=>"Updated bajratest",
+          :then_actions=>[{
+              :priority=>"1",
+              :send_to=>"abc@me.com",
+              :type=>"email_rule_action"
+          }]
+      }
+  }
+
+MachineShop::Rules.update("541c22aefaf3d9529c000021",auth_token,edit_rule_json)
+  # MachineShop::Rules.update(create_hash,auth_token)
+
+
+  end
+
   specificRule = nil
  
  

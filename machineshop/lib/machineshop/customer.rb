@@ -7,7 +7,7 @@ module MachineShop
 
 
 		def self.update(id,auth_token,params={})
-			response = MachineShop.put(self.url+"/#{id}", auth_token, params)
+			response = MachineShop.gem_put(self.url+"/#{id}", auth_token, params)
 			Util.convert_to_machineshop_object(response, auth_token, self.class_name)
 		end
 	end

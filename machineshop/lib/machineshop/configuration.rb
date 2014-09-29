@@ -5,7 +5,8 @@ module MachineShop
 		def initialize
 			#default values
 			@expiry_time=0
-			@enable_caching = true
+			# default caching is set to false
+			@enable_caching = false
 			@base_version = "v0"
 			@custom_endpoints_cache_time = lambda{86400.seconds.ago}
 			#default 1 day

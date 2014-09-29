@@ -124,15 +124,19 @@ module MachineShop
 
     #Check if db_connected
     def self.db_connected?
-      db_connected = true
-      begin
-        MachineShop::Database.new
-      rescue DatabaseError =>e
-        # puts e.message
-        db_connected= false
-      rescue SchemaError =>e
-        # puts e.message
-        # db_connected=true
+        db_connected = true
+      if MachineShop.configuration.enable_caching
+        begin
+          MachineShop::Database.new
+        rescue DatabaseError =>e
+          # puts e.message
+          db_connected= false
+        rescue SchemaError =>e
+          # puts e.message
+          # db_connected=true
+        end
+      else
+        db_connected = false
       end
 
       db_connected

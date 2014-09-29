@@ -2,21 +2,21 @@ require_relative '../spec_helper'
 
 
 #MachineShop.api_base_url= 'http://machineshop.dev:3000/api/v0'
-MachineShop.api_base_url= 'http://stage.services.machineshop.io/api/v0'
+MachineShop.api_base_url= 'localhost:3000/api/v1'
 
 #publisher_username = 'publisher@machineshop.com'
-publisher_username = 'admin@csr.com'
+publisher_username = 'publisher@csr.com'
 publisher_password = 'password'
 
 
-  auth_token, user = MachineShop::User.authenticate(
+  auth_token, user = MachineShop::Users.authenticate(
       :email => publisher_username,
       :password => publisher_password
   )
-describe MachineShop::Customer do
+describe MachineShop::Customers do
 
   it "should get all the customers " do
-    customers = MachineShop::Customer.all({}, auth_token)
+    customers = MachineShop::Customers.all({}, auth_token)
 
     puts "customers are #{customers}"
 
@@ -28,7 +28,7 @@ describe MachineShop::Customer do
    specificCustomer = nil
   it "should create customer " do
 
-    specificCustomer = MachineShop::Customer.create({:email=>"bajratests@bajratechnologies.com",
+    specificCustomer = MachineShop::Customers.create({:email=>"bajratests@bajratechnologies.com",
                                              :password=>'password',
                                              :notification_method=>'sms',
                                              :first_name=>'niroj',:last_name=>'sapkota',
@@ -48,7 +48,7 @@ describe MachineShop::Customer do
     ap "looking up customer before:"
     ap specificCustomer.as_json
     
-    retrieved_cust = MachineShop::Customer.retrieve(specificCustomer.id, auth_token)
+    retrieved_cust = MachineShop::Customers.retrieve(specificCustomer.id, auth_token)
     
     ap "looking up customer after:"
     ap retrieved_cust.as_json
@@ -60,7 +60,7 @@ describe MachineShop::Customer do
   it "should update the customer with id " do
 
     ap "updating customer with id : #{specificCustomer.id}"
-    update = MachineShop::Customer.update(specificCustomer.id,auth_token,{:notification_method => 'email',:first_name=>'testJohn'})
+    update = MachineShop::Customers.update(specificCustomer.id,auth_token,{:notification_method => 'email',:first_name=>'testJohn'})
     ap update.as_json
   end
 

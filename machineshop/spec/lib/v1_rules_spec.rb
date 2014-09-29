@@ -28,7 +28,7 @@ describe MachineShop::Rules do
   rules=nil
  
   it "should get all the rules " do
-    rules = MachineShop::Rules.all({},auth_token)
+    # rules = MachineShop::Rules.all({},auth_token)
     # puts "rules haru : #{rules}"
     # ap "getting rules"
     # ap rules.as_json
@@ -67,14 +67,14 @@ describe MachineShop::Rules do
   }
 
     # ap "creating rule "
-    createdRule = MachineShop::Rules.create(create_hash,auth_token)
+    # createdRule = MachineShop::Rules.create(create_hash,auth_token)
 
-    ap "createdRule"
-    ap createdRule
+    # ap "createdRule"
+    # ap createdRule
 
 # ap createdRule.as_json
 
-    createdRule.should_not be_nil
+    # createdRule.should_not be_nil
 
   end
 
@@ -82,16 +82,19 @@ describe MachineShop::Rules do
 
     edit_rule_json = {
       :rule=>{
-          :description=>"Updated bajratest",
+          :description=>"ahah from gem",
           :then_actions=>[{
-              :priority=>"1",
-              :send_to=>"abc@me.com",
+              :priority=>"2",
+              :send_to=>"hellothereabc@me.com",
               :type=>"email_rule_action"
           }]
       }
   }
 
-MachineShop::Rules.update("541c22aefaf3d9529c000021",auth_token,edit_rule_json)
+updated = MachineShop::Rules.update("54228a1afaf3d9bc38000009",auth_token,edit_rule_json)
+ap "updated rule response"
+ap updated
+
   # MachineShop::Rules.update(create_hash,auth_token)
 
 

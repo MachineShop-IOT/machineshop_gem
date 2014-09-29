@@ -13,6 +13,7 @@ MachineShop.configure do |config|
   config.db_username="root"
   config.db_password="root"
   config.db_host= "localhost"
+  # config.enable_caching=true
   config.expiry_time= lambda{10.seconds.ago}
    #second
 end
@@ -31,7 +32,7 @@ describe MachineShop::Rules do
     rules = MachineShop::Rules.all({},auth_token)
     # puts "rules haru : #{rules}"
     # ap "getting rules"
-    ap rules.as_json
+    # ap rules.as_json
     rules.should_not be_nil
 
 
@@ -120,7 +121,7 @@ describe MachineShop::Rules do
   it "should get rule by data_source" do
     test_data = MachineShop::Rules.get_by_data_source(auth_token,'5417d6effaf3d9e6b6000002')
     # ap "rule by_device_instance :"
-    ap test_data.as_json
+    # ap test_data.as_json
     test_data.should_not be_nil
 
   end

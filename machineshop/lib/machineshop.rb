@@ -120,8 +120,8 @@ module MachineShop
       platform_request(url, auth_token, body_hash, :post)
     end
 
-    def gem_delete(url, auth_token, body_hash)
-      platform_request(url, auth_token, body_hash, :delete)
+    def gem_delete(url, auth_token, *params)
+      platform_request(url, auth_token, nil ,:delete)
     end
 
     def gem_put(url, auth_token, body_hash)

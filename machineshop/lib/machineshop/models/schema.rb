@@ -60,7 +60,7 @@ ActiveRecord::Schema.define do
         t.string :updated_at
         t.string :created_at
         t.text :data_source_type
-        t.string :last_report
+        t.text :last_report
         t.string :report_count
         t.string :active
 

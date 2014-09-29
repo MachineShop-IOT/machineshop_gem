@@ -39,7 +39,7 @@ describe MachineShop::Rules do
 
 
   it "should delete rule" do
-    del = MachineShop::Rules.delete_rule(auth_token,"54228a1afaf3d9bc38000009")
+    del = MachineShop::Rules.delete_rule("54228a1afaf3d9bc38000009",auth_token)
     ap del
 
   end

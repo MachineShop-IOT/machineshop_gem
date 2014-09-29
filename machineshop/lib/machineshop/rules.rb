@@ -27,17 +27,17 @@ module MachineShop
     #   MachineShop.gem_get(url, auth_token)
     # end
 
-    def self.get_by_data_source(auth_token,id)
+    def self.get_by_data_source(id,auth_token)
       url = platform_url + "/data_sources/#{id}"
       MachineShop.gem_get(url, auth_token)
     end
 
-    def post_rule(auth_token, rule_hash)
-      url = platform_url
-      MachineShop.gem_post(url, auth_token, rule_hash)
-    end
+    # def post_rule(auth_token, rule_hash)
+    #   url = platform_url
+    #   MachineShop.gem_post(url, auth_token, rule_hash)
+    # end
 
-    def self.delete_rule(auth_token, id)
+    def self.delete_rule(id,auth_token)
       url = platform_url + "/#{id}"
       MachineShop.gem_delete(url, auth_token)
     end

@@ -28,7 +28,8 @@ module MachineShop
         # 'User' => User,
         'Users' => Users,
         'Utility' => Utility,
-        'Customer'=> Customer
+        'Customers'=> Customers
+        # 'Customer'=> Customer
       }
       case resp
       when Array

@@ -24,6 +24,17 @@ module MachineShop
     def delete
       MachineShop.gem_delete("/platform/data_sources/#{self.id}?_type=#{self._type}", @auth_token,{})
     end
+
+   
+    def self.update(id,auth_token,params={})
+      response = MachineShop.gem_put(self.url+"/#{id}", auth_token, params)
+      Util.convert_to_machineshop_object(response, auth_token, self.class_name)
+    end
+
+    # def self.delete(name,auth_token)
+    #   response = MachineShop.gem_delete(self.url+"/#{name}", auth_token, {})
+    # end
+
     
     private
 

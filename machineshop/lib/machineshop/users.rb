@@ -36,7 +36,7 @@ module MachineShop
     end
 
     def self.role_url
-      '/platform/role'
+      '/platform/roles'
     end
     
   end

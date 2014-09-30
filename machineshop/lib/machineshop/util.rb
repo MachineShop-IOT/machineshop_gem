@@ -28,7 +28,8 @@ module MachineShop
         # 'User' => User,
         'Users' => Users,
         'Utility' => Utility,
-        'Customers'=> Customers
+        'Customers'=> Customers,
+        'CustomApis'=> CustomApis
         # 'Customer'=> Customer
       }
       case resp

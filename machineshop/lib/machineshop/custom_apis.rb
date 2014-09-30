@@ -3,8 +3,8 @@ module MachineShop
 	class CustomApis < APIResource
 		include MachineShop::APIOperations::List
 		include MachineShop::APIOperations::Create
-		include MachineShop::APIOperations::Delete
-		include MachineShop::APIOperations::Update
+		# include MachineShop::APIOperations::Delete
+		# include MachineShop::APIOperations::Update
 
 
 		def self.update(name,auth_token,params={})

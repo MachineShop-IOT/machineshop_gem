@@ -35,12 +35,21 @@ module MachineShop
     #   response = MachineShop.gem_delete(self.url+"/#{name}", auth_token, {})
     # end
 
-    
+    def create_email_data_source(params)
+      params.merge!({:data_source_type => self.id})
+      MachineShop.gem_post(email_data_source_url, @auth_token, params)
+    end
+
     private
 
     def report_count_url
       url + '/report_count'
     end
 
-end
+    def email_data_source_url
+      '/platform/email_data_sources'
+    end
+
+
+  end
 end

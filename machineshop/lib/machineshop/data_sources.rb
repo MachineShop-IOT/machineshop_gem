@@ -36,7 +36,6 @@ module MachineShop
     # end
 
     def self.create_email_data_source(params, auth_token)
-      params.merge!({:data_source_type => self.id})
       MachineShop.gem_post(email_data_source_url, auth_token, params)
     end
 

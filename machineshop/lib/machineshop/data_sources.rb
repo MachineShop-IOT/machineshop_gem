@@ -22,7 +22,7 @@ module MachineShop
     end
 
     def delete
-      MachineShop.gem_delete("/platform/data_sources/#{self.id}?_type=#{self._type}", @auth_token,{})
+      MachineShop.gem_delete("/platform/data_sources/#{self.id}", @auth_token,{})
     end
 
    

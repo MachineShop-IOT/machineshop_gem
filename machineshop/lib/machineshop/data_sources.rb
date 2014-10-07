@@ -36,16 +36,16 @@ module MachineShop
     # end
 
     def self.create_email_data_source(params, auth_token)
-      MachineShop.gem_post(email_data_source_url, auth_token, params)
+      MachineShop.gem_post('/platform/email_data_sources', auth_token, params)
     end
 
     private
 
-    def report_count_url
+    def self.report_count_url
       url + '/report_count'
     end
 
-    def email_data_source_url
+    def self.email_data_source_url
       '/platform/email_data_sources'
     end
 

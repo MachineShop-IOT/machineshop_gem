@@ -1,6 +1,10 @@
 module MachineShop
   class Users < APIResource
-    
+    include MachineShop::APIOperations::List
+    include MachineShop::APIOperations::Create
+    include MachineShop::APIOperations::Delete
+    include MachineShop::APIOperations::Update
+
     # Specific API calls
     def self.authenticate(user_hash)
       #user_hash is => { email: email, password: password }

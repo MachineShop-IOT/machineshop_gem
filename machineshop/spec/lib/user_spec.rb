@@ -6,7 +6,7 @@ require_relative '../spec_helper'
 MachineShop.api_base_url= 'localhost:3000/api/v1'
 
 #publisher_username = 'publisher@machineshop.com'
-publisher_username = 'apublisher@csr.com'
+publisher_username = 'abcd@customer.com'
 publisher_password = 'password'
 
 describe MachineShop::Users do
@@ -31,17 +31,22 @@ describe MachineShop::Users do
     end
 
     ap "User Data"
-    ap user.as_json
+    # ap user.as_json
     auth_token.should_not be_nil
     user.should_not be_nil
     user.should be_kind_of MachineShop::Users
   end
 
+  it "should reset the auth_token" do
+  reset = MachineShop::Users.new_api_key(user.id,auth_token)
+  ap reset
+end
+
   it "should get all roles from a static instance" do
     element_data = MachineShop::Users.all_roles(auth_token)
 
     ap "all_roles: "
-    ap element_data.as_json
+    # ap element_data.as_json
     puts element_data
 
     element_data.should_not be_nil
@@ -50,7 +55,7 @@ describe MachineShop::Users do
   it "should get all roles from a user instance" do
 
     ap " here user is : "
-    ap user.as_json
+    # ap user.as_json
     element_data = user.all_roles
     element_data.should_not be_nil
   end
@@ -59,7 +64,7 @@ describe MachineShop::Users do
     element_data = MachineShop::Users.retrieve(user.id, auth_token)
 
     ap "user retrieve"
-    ap element_data.as_json
+    # ap element_data.as_json
 
     element_data.should_not be_nil
     element_data.should be_kind_of MachineShop::Users

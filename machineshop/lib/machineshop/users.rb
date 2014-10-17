@@ -21,6 +21,10 @@ module MachineShop
     
     def all_roles
       MachineShop.gem_get(self.class.role_url, @auth_token)
+    end
+
+    def self.new_api_key(user_id,auth_token)
+      MachineShop.gem_get("#{self.url}/#{user_id}/new_api_key", auth_token)
     end       
     
     def device_instances(filters={})

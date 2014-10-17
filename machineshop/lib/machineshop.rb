@@ -185,7 +185,7 @@ module MachineShop
 
         end
 
-        puts "request params: #{opts} "
+        # puts "request params: #{opts} "
 
         begin
           response = execute_request(opts)
@@ -211,7 +211,6 @@ module MachineShop
         end
 
         rbody = response.body
-        # puts rbody
         rcode = response.code
       end
 

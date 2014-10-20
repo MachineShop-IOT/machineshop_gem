@@ -130,6 +130,10 @@ module MachineShop
       platform_request(url, auth_token, body_hash, :put)
     end
 
+    def gem_multipart(url, auth_token, body_hash)
+      platform_request(url, auth_token, body_hash, :post, true)
+    end
+
     def headers(auth_token)
       header ={:content_type => :json,
       :accept => :json}
@@ -137,7 +141,7 @@ module MachineShop
       header
     end
 
-    def platform_request(url, auth_token, body_hash=nil, http_verb=:get )
+    def platform_request(url, auth_token, body_hash=nil, http_verb=:get , multipart=false)
       rbody=nil
       cachedContent = :true
       # ApiRequest.cache(url,MachineShop.configuration.expiry_time)
@@ -183,6 +187,7 @@ module MachineShop
             :timeout => 80
           }
 
+            opts[:payload] = MachineShop::JSON.dump(body_hash.merge({:multipart => true})) if multipart
         end
 
         # puts "request params: #{opts} "

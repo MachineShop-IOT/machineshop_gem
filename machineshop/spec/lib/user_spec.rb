@@ -6,7 +6,7 @@ require_relative '../spec_helper'
 MachineShop.api_base_url= 'localhost:3000/api/v1'
 
 #publisher_username = 'publisher@machineshop.com'
-publisher_username = 'abcd@customer.com'
+publisher_username = 'publisher@csr.com'
 publisher_password = 'password'
 
 describe MachineShop::Users do
@@ -37,10 +37,12 @@ describe MachineShop::Users do
     user.should be_kind_of MachineShop::Users
   end
 
-  it "should reset the auth_token" do
-  reset = MachineShop::Users.new_api_key(user.id,auth_token)
-  ap reset
-end
+  tmpfile = "abc.jpg"
+
+  it "should create logo" do 
+    logo = MachineShop::Users.create_user_logo(user.id,{logo: tmpfile}, auth_token)
+  end
+
 
   it "should get all roles from a static instance" do
     element_data = MachineShop::Users.all_roles(auth_token)

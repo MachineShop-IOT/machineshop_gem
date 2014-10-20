@@ -41,6 +41,17 @@ module MachineShop
       response = MachineShop.gem_put(self.url+"/#{id}", auth_token, params)
       Util.convert_to_machineshop_object(response, auth_token, self.class_name)
     end
+
+
+    def self.create_user_logo(user_id, params, auth_token)
+      MachineShop.gem_multipart("/platform/users/#{user_id}/logo", auth_token, params)
+    end
+
+    def self.delete_user_logo(user_id, auth_token)
+      MachineShop.gem_delete("/platform/users/#{user_id}/logo", auth_token)
+    end
+
+
     
     
     private

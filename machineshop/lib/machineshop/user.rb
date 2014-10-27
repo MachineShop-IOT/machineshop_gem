@@ -28,6 +28,25 @@ module MachineShop
       filters.merge!(:user_id => self.id)
       MachineShop::Meter.all(filters, @auth_token)
     end
+
+    def self.update(id,auth_token,params={})
+      response = MachineShop.gem_put(self.url+"/#{id}", auth_token, params)
+      Util.convert_to_machineshop_object(response, auth_token, self.class_name)
+    end
+
+
+    def self.create_user_logo(user_id, params, auth_token)
+      MachineShop.gem_multipart(self.url+"/#{user_id}/logo", auth_token, params)
+    end
+
+    def self.delete_user_logo(user_id, auth_token)
+      MachineShop.gem_delete(self.url+"/#{user_id}/logo", auth_token)
+    end
+
+    def self.check_users(user_hash)
+      MachineShop.gem_get("user_session/user/versions", user_hash)
+    end
+
     
     private
 

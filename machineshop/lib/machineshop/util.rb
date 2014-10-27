@@ -21,16 +21,17 @@ module MachineShop
         'DeviceInstance' => DeviceInstance,
         'Mapping' => Mapping,
         'Meter' => Meter,
-        # 'Report' => Report,
+        'Monitor' => Monitor,
+        'Report' => Report,
         'Reports' => Reports,
-        # 'Rule' => Rule,
+        'Rule' => Rule,
         'Rules' => Rules,
-        # 'User' => User,
+        'User' => User,
         'Users' => Users,
         'Utility' => Utility,
+        'Customer'=> Customer,
         'Customers'=> Customers,
         'CustomApis'=> CustomApis
-        # 'Customer'=> Customer
       }
       case resp
       when Array

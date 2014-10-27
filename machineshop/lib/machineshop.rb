@@ -31,15 +31,16 @@ require 'machineshop/device'
 require 'machineshop/machineshop_object'
 require 'machineshop/mapping'
 require 'machineshop/meter'
+require 'machineshop/monitor'
+require 'machineshop/report'
 require 'machineshop/reports'
-# require 'machineshop/report'
-# require 'machineshop/customer'
+require 'machineshop/customer'
 require 'machineshop/customers'
 require 'machineshop/custom_apis'
 require 'machineshop/routes'
-# require 'machineshop/rule'
+require 'machineshop/rule'
 require 'machineshop/rules'
-# require 'machineshop/user'
+require 'machineshop/user'
 require 'machineshop/users'
 require 'machineshop/utility'
 require 'machineshop/json'
@@ -190,7 +191,7 @@ module MachineShop
             opts[:payload] = MachineShop::JSON.dump(body_hash.merge({:multipart => true})) if multipart
         end
 
-        # puts "request params: #{opts} "
+        ap "request params: #{opts} "
 
         begin
           response = execute_request(opts)

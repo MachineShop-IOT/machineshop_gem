@@ -51,8 +51,8 @@ module MachineShop
       MachineShop.gem_delete("/platform/users/#{user_id}/logo", auth_token)
     end
 
-    def self.check_users(user_hash)
-      MachineShop.gem_get("user_session/user/versions", user_hash)
+    def self.check_user_versions(user_hash)
+      MachineShop.gem_get("/user_session/user/versions",nil, user_hash)
     end
 
     private

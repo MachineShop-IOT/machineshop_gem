@@ -1,6 +1,6 @@
-#User Defined API for V1
+#User Defined API for V0
 module MachineShop
-	class CustomApis < APIResource
+	class CustomApi < APIResource
 		include MachineShop::APIOperations::List
 		include MachineShop::APIOperations::Create
 		# include MachineShop::APIOperations::Delete
@@ -15,6 +15,10 @@ module MachineShop
 		def self.delete(name,auth_token)
 			response = MachineShop.gem_delete(self.url+"/#{name}", auth_token, {})
 		end
+	end
+
+	def self.url
+		"/platform/custom"
 	end
 end
 

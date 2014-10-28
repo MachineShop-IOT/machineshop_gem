@@ -15,10 +15,14 @@ module MachineShop
 		def self.delete(name,auth_token)
 			response = MachineShop.gem_delete(self.url+"/#{name}", auth_token, {})
 		end
+
+		def self.url()
+			"/platform/custom"
+		end
+
 	end
 
-	def self.url
-		"/platform/custom"
-	end
+
+
 end
 

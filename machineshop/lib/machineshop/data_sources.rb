@@ -3,7 +3,7 @@ module MachineShop
     include MachineShop::APIOperations::List
     include MachineShop::APIOperations::Create
     include MachineShop::APIOperations::Update
-    # include MachineShop::APIOperations::Delete
+    include MachineShop::APIOperations::Delete
     
     # Specific API calls
     
@@ -21,9 +21,9 @@ module MachineShop
       MachineShop::Meter.all(filters, @auth_token)
     end
 
-    def delete
-      MachineShop.gem_delete("/platform/data_sources/#{self.id}", @auth_token,{})
-    end
+    #def delete
+    #  MachineShop.gem_delete("/platform/data_sources/#{self.id}", @auth_token,{})
+#    end
 
    
     def self.update(id,auth_token,params={})

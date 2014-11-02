@@ -21,6 +21,10 @@ module MachineShop
       Util.convert_to_machineshop_object(response, auth_token, self.class_name)
     end
 
+    def self.delete_data_source_type(id, auth_token)
+      response = MachineShop.gem_delete(self.url + "/#{id}", auth_token, {})
+    end
+
     private
     def self.url
       '/platform/data_source_types'

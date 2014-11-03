@@ -66,7 +66,7 @@ require 'machineshop/models/api_endpoint'
 module MachineShop
   class << self
     # @@api_base_url = 'http://api.machineshop.io/api/v0'
-    @@api_base_url = 'http://stage.services.machineshop.io/api/v0'
+    @@api_base_url = 'http://stage.services.machineshop.io/api/v1'
 
     #configs starts
     attr_writer :configuration

@@ -55,6 +55,10 @@ module MachineShop
       MachineShop.gem_get("/user_session/user/versions",nil, user_hash)
     end
 
+    def self.delete(id,auth_token)
+      MachineShop.gem_delete(self.url+"/#{id}", auth_token)
+    end
+
     private
 
     def self.authenticate_url

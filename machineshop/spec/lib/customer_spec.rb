@@ -74,6 +74,19 @@ describe MachineShop::Customers do
   
   #success test
 
+
+it "should delete customer without creating instance " do
+
+    #puts
+    puts "deleting customer with id : #{specificCustomer.id}"
+
+    delete = MachineShop::Customers.delete(specificCustomer.id, auth_token)
+    #delete = MachineShop::Customer.delete(customers[0].id,auth_token)
+    puts "delete #{delete}"
+    delete[:http_code].should eq 200
+  end
+
+
   it "should delete customer with id " do
 
     #puts

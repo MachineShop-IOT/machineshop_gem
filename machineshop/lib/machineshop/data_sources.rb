@@ -26,7 +26,7 @@ module MachineShop
     end
     
     def self.delete(id,type,auth_token)
-      MachineShop.gem_delete("/platform/data_sources/#{id}?_type=#{type}", @auth_token)
+      MachineShop.gem_delete("/platform/data_sources/#{id}?_type=#{type}", auth_token)
     end
    
     def self.update(id,auth_token,params={})

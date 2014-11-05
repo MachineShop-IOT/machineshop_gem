@@ -1,7 +1,6 @@
 #User Defined API for V1
-# deprecated
 module MachineShop
-	class CustomApis < APIResource
+	class ApiProxies < APIResource
 		include MachineShop::APIOperations::List
 		include MachineShop::APIOperations::Create
 		# include MachineShop::APIOperations::Delete

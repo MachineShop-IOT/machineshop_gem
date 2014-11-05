@@ -32,7 +32,8 @@ module MachineShop
         'Customer'=> Customer,
         'Customers'=> Customers,
         'CustomApi'=> CustomApi,
-        'CustomApis'=> CustomApis
+        'ApiProxies'=> ApiProxies,
+        # 'CustomApis'=> CustomApis
       }
       case resp
       when Array

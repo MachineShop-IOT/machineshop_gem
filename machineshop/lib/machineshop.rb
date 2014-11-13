@@ -139,14 +139,19 @@ module MachineShop
 
     def headers(auth_token)
       header ={:content_type => :json,
-      :accept => :json}
-      header.merge!({ authorization: "Basic " + Base64.encode64(auth_token + ':X') }) if auth_token
-      header
-    end
+        :accept => :json}
+        header.merge!({ authorization: "Basic " + Base64.encode64(auth_token + ':X') }) if auth_token
+        header
+      end
 
-    def platform_request(url, auth_token, body_hash=nil, http_verb=:get , multipart=false)
-      rbody=nil
-      cachedContent = :true
+      def platform_request(url, auth_token, body_hash=nil, http_verb=:get , multipart=false)
+
+        if multipart
+          ap "multipart aayooooo"
+          ap body_hash
+        end
+        rbody=nil
+        cachedContent = :true
       # ApiRequest.cache(url,MachineShop.configuration.expiry_time)
       if http_verb==:get
 
@@ -186,13 +191,12 @@ module MachineShop
             :url => api_uri,
             :headers => headers,
             :open_timeout => 30,
-            :payload => MachineShop::JSON.dump(body_hash),
+            # :payload => MachineShop::JSON.dump(body_hash),
             :timeout => 80
           }
 
-            opts[:payload] = MachineShop::JSON.dump(body_hash.merge({:multipart => true})) if multipart
+          opts[:payload] = multipart ?  {:multipart=>true}.merge!(body_hash) :MachineShop::JSON.dump(body_hash)
         end
-
         ap "request params: #{opts} "
 
         begin

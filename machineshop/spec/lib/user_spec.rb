@@ -37,10 +37,12 @@ describe MachineShop::Users do
     user.should be_kind_of MachineShop::Users
   end
 
-  tmpfile = "abc.jpg"
+  tmpfile = "abc.png"
+
+  logo = File.open(tmpfile, "r")
 
   it "should create logo" do 
-    logo = MachineShop::Users.create_user_logo(user.id,{logo: tmpfile}, auth_token)
+    logo = MachineShop::Users.create_user_logo(user.id,{logo: logo}, auth_token)
   end
 
 

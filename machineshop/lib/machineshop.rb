@@ -145,11 +145,6 @@ module MachineShop
       end
 
       def platform_request(url, auth_token, body_hash=nil, http_verb=:get , multipart=false)
-
-        if multipart
-          ap "multipart aayooooo"
-          ap body_hash
-        end
         rbody=nil
         cachedContent = :true
       # ApiRequest.cache(url,MachineShop.configuration.expiry_time)

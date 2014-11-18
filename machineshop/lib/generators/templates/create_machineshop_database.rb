@@ -14,7 +14,7 @@ class CreateMachineshopDatabase < ActiveRecord::Migration
             t.string :endpoint
             t.string :auth_token
         end
-        add_index :api_endpoints, [:verb,:endpoint], unique=>true
+        add_index :api_endpoints, [:verb,:endpoint], :unique=>true
 
 
         create_table :data_source_types_caches do |t|

@@ -8,7 +8,8 @@ module MachineShop
   require 'active_record'
   # require 'machineshop/configuration'
 
-  class Database < Configuration
+  class Database < ActiveRecord::Base
+  # class Database < Configuration
 
     attr_accessor :con, :rs,:db_connected
 

@@ -8,14 +8,14 @@ MachineShop.api_base_url= 'localhost:3000/api/v1'
 publisher_username = 'publisher@csr.com'
 publisher_password = 'password'
 
-MachineShop.configure do |config|
-  config.db_name = "machineshop"
-  config.db_username="root"
-  config.db_password="root"
-  config.db_host= "localhost"
-  config.expiry_time= lambda{10.seconds.ago}
-   #second
-end
+# MachineShop.configure do |config|
+#   config.db_name = "machineshop"
+#   config.db_username="root"
+#   config.db_password="root"
+#   config.db_host= "localhost"
+#   config.expiry_time= lambda{10.seconds.ago}
+#    #second
+# end
 
   auth_token, user = MachineShop::Users.authenticate(
       :email => publisher_username,
@@ -28,7 +28,7 @@ describe MachineShop::Rules do
   rules=nil
  
   it "should get all the rules " do
-    # rules = MachineShop::Rules.all({},auth_token)
+    rules = MachineShop::Rules.all({},auth_token)
     # puts "rules haru : #{rules}"
     # ap "getting rules"
     # ap rules.as_json
@@ -91,9 +91,9 @@ describe MachineShop::Rules do
       }
   }
 
-updated = MachineShop::Rules.update("54228a1afaf3d9bc38000009",auth_token,edit_rule_json)
-ap "updated rule response"
-ap updated
+# updated = MachineShop::Rules.update("54228a1afaf3d9bc38000009",auth_token,edit_rule_json)
+# ap "updated rule response"
+# ap updated
 
   # MachineShop::Rules.update(create_hash,auth_token)
 

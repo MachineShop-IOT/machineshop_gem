@@ -397,15 +397,19 @@ module MachineShop
 
 
     def get_from_cache(url, body_hash,auth_token)
+      ap "inside get_from_cache"
       result =Array.new
       id,klass= Util.get_klass_from_url(url)
       if !TABLE_NAME_BLACKLIST.include?(klass)
         if Util.db_connected?
+          ap "inside db_connected?"
 
           klass = klass.capitalize+"Cache"
 
           modelClass = Object.const_set klass, Class.new(ActiveRecord::Base)
           modelClass.inheritance_column = :_type_disabled
+
+          ap "table name #{klass.pluralize.underscore}"
 
           data_exist=false
           if ActiveRecord::Base.connection.table_exists? CGI.escape(klass.pluralize.underscore)

@@ -19,13 +19,13 @@ module MachineShop
 
 
         ActiveRecord::Base.establish_connection(
-          Rails.configuration.database_configuration[Rails.env]
+          # Rails.configuration.database_configuration[Rails.env]
 
-        # adapter:  'mysql', # or 'postgresql' or 'sqlite3'
-        # host:     MachineShop.configuration.db_host,
-        # database: MachineShop.configuration.db_name,
-        # username: MachineShop.configuration.db_username,
-        # password: MachineShop.configuration.db_password,
+        adapter:  'mysql', # or 'postgresql' or 'sqlite3'
+        host:     MachineShop.configuration.db_host,
+        database: MachineShop.configuration.db_name,
+        username: MachineShop.configuration.db_username,
+        password: MachineShop.configuration.db_password,
         )
 
       rescue ActiveRecord::AdapterNotSpecified =>e
@@ -33,7 +33,7 @@ module MachineShop
       rescue ActiveRecord::AdapterNotFound =>e
         raise DatabaseError.new(e)
       rescue StandardError =>e
-        raise DatabaseError.new("Database Error #1")
+        raise DatabaseError.new(e)
       rescue Exception => e
         # @db_connected=false
         raise DatabaseError.new("Connection to Database refused")

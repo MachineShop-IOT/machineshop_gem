@@ -7,3 +7,4 @@ gemspec
 gem "activerecord"
 gem "awesome_print"
 gem 'will_paginate'
+# gem 'sqlite3'

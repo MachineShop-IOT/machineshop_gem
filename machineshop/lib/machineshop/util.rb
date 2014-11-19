@@ -128,7 +128,7 @@ module MachineShop
 
     #Check if db_connected
     def self.db_connected?
-      # ap "db check----------"
+      ap "db check----------"
 
       # ap "*******************"
       # ap MachineShop.configuration

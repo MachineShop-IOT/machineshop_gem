@@ -11,12 +11,16 @@ module MachineShop
   class Database < ActiveRecord::Base
   # class Database < Configuration
 
-    attr_accessor :con, :rs,:db_connected
+    # attr_accessor :con, :rs,:db_connected
 
     def initialize()
 
+      puts "____calling _______"
+
       # @db_connected=true
       begin
+
+        ap ActiveRecord::Base.configurations[Rails.env]
 
         establish_connection ActiveRecord::Base.configurations[Rails.env]
 

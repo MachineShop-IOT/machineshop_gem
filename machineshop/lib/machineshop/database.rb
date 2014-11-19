@@ -8,7 +8,7 @@ module MachineShop
   require 'active_record'
   # require 'machineshop/configuration'
 
-  class Database < ActiveRecord::Base
+  class Database
   # class Database < Configuration
 
     # attr_accessor :con, :rs,:db_connected
@@ -22,7 +22,7 @@ module MachineShop
 
         ap ActiveRecord::Base.configurations[Rails.env]
 
-        establish_connection ActiveRecord::Base.configurations[Rails.env]
+        ActiveRecord::Base.establish_connection ActiveRecord::Base.configurations[Rails.env]
 
 
 

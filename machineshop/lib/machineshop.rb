@@ -126,7 +126,7 @@ module MachineShop
     end
 
     def gem_delete(url, auth_token, *params)
-      platform_request(url, auth_token, nil ,:delete)
+      response = platform_request(url, auth_token, nil ,:delete)
     end
 
     def gem_put(url, auth_token, body_hash)
@@ -145,6 +145,8 @@ module MachineShop
       end
 
       def platform_request(url, auth_token, body_hash=nil, http_verb=:get , multipart=false)
+        ap "yaha url is #{url}"
+        ap "body_hash is #{body_hash}"
         rbody=nil
         cachedContent = :true
       # ApiRequest.cache(url,MachineShop.configuration.expiry_time)
@@ -229,6 +231,7 @@ module MachineShop
         resp = Util.symbolize_names(resp)
 
         save_into_cache(url,resp,auth_token) if (http_verb == :get && cachedContent==:false)
+        after_platform_request(url, resp, auth_token, http_verb)
 
         resp.merge!({:http_code => rcode}) if resp.is_a?(Hash)
         return resp
@@ -301,14 +304,44 @@ module MachineShop
       return false
     end
 
+    def after_platform_request(url, data , auth_token, http_verb)
+
+      # delete_from_cache(url,auth_token) if (http_verb==:delete)
+      # update_cache(url,resp,auth_token) if (http_verb==:put)
+
+      if http_verb==:delete
+        ap "inside delete--------after_platform_request"
+        id,klass= Util.get_klass_from_url(url)
+        if !TABLE_NAME_BLACKLIST.include?(klass)
+          if Util.db_connected?
+
+            klass = klass.capitalize+"Cache"
+
+            modelClass ||= (Object.const_set klass, Class.new(ActiveRecord::Base))
+            # modelClass.inheritance_column = :_type_disabled
+            #Because 'type' is reserved for storing the class in case of inheritance and our array has "TYPE" key
+
+            if ActiveRecord::Base.connection.table_exists? CGI.escape(klass.pluralize.underscore)
+
+              #delete all the previous records
+              ap "deleting id=> #{id},  auth_token => #{auth_token}"
+
+              modelClass.where(:_id=>id,:auth_token=>auth_token).delete
+            end
+          end
+        end
+      end
+    end
+
 
     def save_into_cache(url, data,auth_token)
+      ap data
       id,klass= Util.get_klass_from_url(url)
       if !TABLE_NAME_BLACKLIST.include?(klass)
         if Util.db_connected?
 
           klass = klass.capitalize+"Cache"
-          puts "creating dynamic class #{klass}"
+          ap "creating dynamic class #{klass}"
 
 
           modelClass ||= (Object.const_set klass, Class.new(ActiveRecord::Base))
@@ -319,12 +352,15 @@ module MachineShop
 
             #delete all the previous records
 
-            modelClass.delete_all
-            puts "db table #{klass.pluralize.underscore} exists"
+            #TODOOO after_platform_request should handle this
+
+            # modelClass.delete_all
+            ap "db table #{klass.pluralize.underscore} exists"
             if data.class ==Hash
+              ap "hash bhitra"
 
               findId = data[:_id] || data["_id"]
-              @activeObject = modelClass.new
+              @activeObject = modelClass.where(_id: findId).first_or_create
               # @activeObject = modelClass.find_by(_id: findId) || modelClass.new
               data.each do |k,v|
 
@@ -337,7 +373,7 @@ module MachineShop
                 else
                   val=v
                 end
-                if @activeObject.has_attribute?(k)
+                if @activeObject.respond_to?(k)
                   @activeObject.send("#{k}=",val)
                 end
                 @activeObject.save
@@ -345,12 +381,16 @@ module MachineShop
 
 
             else
+              ap "-----------array----------"
               data.each do |data_arr|
+                ap "inside 1"
 
                 if data_arr
+                  ap "inside 2"
 
                   if data_arr.first.class==String && data_arr.class==Array
-                    @activeObject = modelClass.find_by(rule_condition: data_arr.select{|k| k.include?("rule_condition")})  || modelClass.new
+                    ap "inside 3 --- for special case "
+                    @activeObject = modelClass.where(rule_condition: data_arr.select{|k| k.include?("rule_condition")})  || modelClass.new
                     data_arr.each do |k|
 
                       if k.include?("rule_condition")
@@ -362,9 +402,17 @@ module MachineShop
 
 
                   else
+                    ap "inside else 4 ma array ho yo "
                     if data_arr.class!=String
+
                       findId = data_arr[:_id] || data_arr["_id"]
-                      @activeObject = modelClass.find_by(_id: findId) || modelClass.new
+                      ap "getting primary _id is  #{findId}"
+                      @activeObject = modelClass.where(_id: findId).first_or_create
+                      # @activeObject = modelClass.where(_id: findId) || modelClass.new
+
+                      ap "now find or initialize and initialized model object is "
+                      ap @activeObject
+                      ap "*******---------**********"
                       data_arr.each do |k,v|
 
                         val=nil
@@ -377,14 +425,20 @@ module MachineShop
                           val=v
                         end
                         #check if the database has the particular field to store
-                        if @activeObject.has_attribute?(k)
+                        if @activeObject.respond_to?(k)
                           @activeObject.send("#{k}=",val)
                         end
                       end
                     end
                   end
                 end
-                @activeObject.send("auth_token=",auth_token)
+                ap "----------- #{auth_token}"
+
+                ap "herererererere"
+                ap "activeObject"
+                ap @activeObject.inspect
+
+                @activeObject.auth_token=auth_token
                 @activeObject.save
               end
             end
@@ -416,7 +470,7 @@ module MachineShop
             puts "db:table #{klass.pluralize} exists"
             resp= nil
             if id
-              resp = modelClass.find_by(_id: id, auth_token: auth_token)
+              resp = modelClass.where(_id: id, auth_token: auth_token)
               data_exist=true if resp
             else
               # pagination = body_hash.select{|k| k==:per_page || k==:page} if body_hash

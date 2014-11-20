@@ -17,6 +17,22 @@ class CreateMachineshopDatabase < ActiveRecord::Migration
         add_index :api_endpoints, [:verb,:endpoint], :unique=>true
 
 
+         create_table :api_proxies_caches do |t|
+            t.string :_id
+            t.string :method
+            t.string :service_type
+            t.string :name
+            t.string :protocol
+            t.string :signature
+            t.string :base_domain
+            t.string :name_space
+            t.string :endpoint
+            t.string :user_id
+            t.string :updated_at
+            t.string :created_at
+            t.string :auth_token
+        end
+
         create_table :data_source_types_caches do |t|
             t.string :_id
             t.string :active

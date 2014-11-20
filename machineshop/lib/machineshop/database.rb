@@ -8,8 +8,8 @@ module MachineShop
   require 'active_record'
   # require 'machineshop/configuration'
 
-  class Database
-  # class Database < Configuration
+  # class Database
+  class Database < Configuration
 
     # attr_accessor :con, :rs,:db_connected
 
@@ -19,32 +19,33 @@ module MachineShop
 
       # @db_connected=true
       begin
+        ap "________________"
 
         ap ActiveRecord::Base.configurations[Rails.env]
 
-        ActiveRecord::Base.establish_connection ActiveRecord::Base.configurations[Rails.env]
+        # ActiveRecord::Base.establish_connection ActiveRecord::Base.configurations[Rails.env]
+
+ActiveRecord::Base.establish_connection(
+        # adapter:  'mysql', # or 'postgresql' or 'sqlite3'
+
+        ActiveRecord::Base.configurations[Rails.env]
+
+  #       adapter: 'postgresql',
+  # encoding: 'unicode',
+  # database: 'machineshop',
+  # pool: 5,
+  # username: 'niroj',
+  # password: 'niroj123'
 
 
+        # adapter: 'mysql',
+        # host:     'localhost',
+        # database: 'machineshop',
+        # username: 'root',
+        # password: 'root'
 
-  #       ActiveRecord::Base.establish_connection(
-  #         # Rails.configuration.database_configuration[Rails.env]
-
-  #         adapter: 'sqlite3',
-  # database: 'db/development.sqlite3',
-  # pool: '5',
-  # timeout: '5000'
-
-  # # -----------------------------------
-
-
-  #       # adapter:  'mysql', # or 'postgresql' or 'sqlite3'
-  #       # host:     MachineShop.configuration.db_host,
-  #       # database: MachineShop.configuration.db_name,
-  #       # username: MachineShop.configuration.db_username,
-  #       # password: MachineShop.configuration.db_password,
-
-  #       # -----------------------------
-  #       )
+        # -----------------------------
+        )
 
       rescue ActiveRecord::AdapterNotSpecified =>e
         puts "yaha1"

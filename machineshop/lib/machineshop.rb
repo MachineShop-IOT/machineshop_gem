@@ -122,15 +122,22 @@ module MachineShop
     end
 
     def gem_post(url, auth_token, body_hash)
-      platform_request(url, auth_token, body_hash, :post)
+      response = platform_request(url, auth_token, body_hash, :post)
     end
 
     def gem_delete(url, auth_token, *params)
-      response = platform_request(url, auth_token, nil ,:delete)
+      platform_request(url, auth_token, nil ,:delete)
+      # response =
+      # after_platform_request(url, response , auth_token, :delete)
+      # return response
+
     end
 
     def gem_put(url, auth_token, body_hash)
       platform_request(url, auth_token, body_hash, :put)
+      # response =
+      # after_platform_request(url, response, auth_token, :put)
+      # return response
     end
 
     def gem_multipart(url, auth_token, body_hash)
@@ -139,16 +146,16 @@ module MachineShop
 
     def headers(auth_token)
       header ={:content_type => :json,
-        :accept => :json}
-        header.merge!({ authorization: "Basic " + Base64.encode64(auth_token + ':X') }) if auth_token
-        header
-      end
+      :accept => :json}
+      header.merge!({ authorization: "Basic " + Base64.encode64(auth_token + ':X') }) if auth_token
+      header
+    end
 
-      def platform_request(url, auth_token, body_hash=nil, http_verb=:get , multipart=false)
-        ap "yaha url is #{url}"
-        ap "body_hash is #{body_hash}"
-        rbody=nil
-        cachedContent = :true
+    def platform_request(url, auth_token, body_hash=nil, http_verb=:get , multipart=false)
+      # ap "yaha url is #{url}"
+      # ap "body_hash is #{body_hash}"
+      rbody=nil
+      cachedContent = :true
       # ApiRequest.cache(url,MachineShop.configuration.expiry_time)
       if http_verb==:get
 
@@ -229,11 +236,30 @@ module MachineShop
         resp = MachineShop::JSON.load(rbody)
         resp ||= {}
         resp = Util.symbolize_names(resp)
-
-        save_into_cache(url,resp,auth_token) if (http_verb == :get && cachedContent==:false)
-        after_platform_request(url, resp, auth_token, http_verb)
-
         resp.merge!({:http_code => rcode}) if resp.is_a?(Hash)
+
+        # ap "cachedContent ==== #{cachedContent}"
+
+        if http_verb == :get
+          if cachedContent==:false
+            # ap "get and cachedContent == false"
+            save_into_cache(url,resp,auth_token)
+          else
+            #this is obtained from cache
+            # ap "this is obtained from cache"
+            #need to perform some actions 
+            # ap "--from cache--"
+            # ap resp
+            # ap "--from cache-- end"
+
+
+          end
+
+        else
+          # ap "else "
+            after_platform_request(url, resp, auth_token, http_verb)
+        end
+
         return resp
       rescue MultiJson::DecodeError
         raise APIError.new("Invalid response object from API: #{rbody.inspect} (HTTP response code was #{rcode})", rcode, rbody)
@@ -308,40 +334,65 @@ module MachineShop
 
       # delete_from_cache(url,auth_token) if (http_verb==:delete)
       # update_cache(url,resp,auth_token) if (http_verb==:put)
+      # ap "----------response -------- data "
+      # ap data
 
-      if http_verb==:delete
-        ap "inside delete--------after_platform_request"
-        id,klass= Util.get_klass_from_url(url)
-        if !TABLE_NAME_BLACKLIST.include?(klass)
-          if Util.db_connected?
+      #perform this for the success action only
 
-            klass = klass.capitalize+"Cache"
+      if data[:http_code]==200
 
-            modelClass ||= (Object.const_set klass, Class.new(ActiveRecord::Base))
-            # modelClass.inheritance_column = :_type_disabled
-            #Because 'type' is reserved for storing the class in case of inheritance and our array has "TYPE" key
+        if http_verb==:delete
+          ap "inside delete--------after_platform_request"
+          id,klass= Util.get_klass_from_url(url)
+          if !TABLE_NAME_BLACKLIST.include?(klass)
+            if Util.db_connected?
 
-            if ActiveRecord::Base.connection.table_exists? CGI.escape(klass.pluralize.underscore)
+              klass = klass.capitalize+"Cache"
 
-              #delete all the previous records
-              ap "deleting id=> #{id},  auth_token => #{auth_token}"
+              modelClass ||= (Object.const_set klass, Class.new(ActiveRecord::Base))
 
-              modelClass.where(:_id=>id,:auth_token=>auth_token).delete
+              # ap "______model object__________"
+              # ap modelClass.inspect
+              # modelClass.inheritance_column = :_type_disabled
+              #Because 'type' is reserved for storing the class in case of inheritance and our array has "TYPE" key
+
+              if ActiveRecord::Base.connection.table_exists? CGI.escape(klass.pluralize.underscore)
+                #delete all the previous records
+                # ap "deleting id=> #{id},  auth_token => #{auth_token}"
+                begin
+                  delte = modelClass.where(:_id=> id, :auth_token=> auth_token).destroy_all
+                  # ap "k aayo delete objet ma ?"
+                  # ap delte
+                rescue Exception => e
+                  # ap "exceee"
+                  ap e
+                end
+              end
             end
           end
+
+        else
+          # ap "performing action after #{http_verb} action"
+          save_into_cache(url,data,auth_token)
         end
+
+        # if http_verb==:put || http_verb==:post
+        #   ap "update ma jaana paryo "
+
+        # end
       end
     end
 
 
     def save_into_cache(url, data,auth_token)
-      ap data
+      # ap data
+
       id,klass= Util.get_klass_from_url(url)
       if !TABLE_NAME_BLACKLIST.include?(klass)
         if Util.db_connected?
 
           klass = klass.capitalize+"Cache"
-          ap "creating dynamic class #{klass}"
+          # ap "creating dynamic class #{klass}"
 
 
           modelClass ||= (Object.const_set klass, Class.new(ActiveRecord::Base))
@@ -355,9 +406,9 @@ module MachineShop
             #TODOOO after_platform_request should handle this
 
             # modelClass.delete_all
-            ap "db table #{klass.pluralize.underscore} exists"
+            # ap "db table #{klass.pluralize.underscore} exists"
             if data.class ==Hash
-              ap "hash bhitra"
+              # ap "hash bhitra"
 
               findId = data[:_id] || data["_id"]
               @activeObject = modelClass.where(_id: findId).first_or_create
@@ -376,20 +427,23 @@ module MachineShop
                 if @activeObject.respond_to?(k)
                   @activeObject.send("#{k}=",val)
                 end
-                @activeObject.save
+                # @activeObject.save
+                #moved from here to (1)
               end
+              #(1)
+              @activeObject.save
 
 
             else
-              ap "-----------array----------"
+              # ap "-----------array----------"
               data.each do |data_arr|
-                ap "inside 1"
+                # ap "inside 1"
 
                 if data_arr
-                  ap "inside 2"
+                  # ap "inside 2"
 
                   if data_arr.first.class==String && data_arr.class==Array
-                    ap "inside 3 --- for special case "
+                    # ap "inside 3 --- for special case "
                     @activeObject = modelClass.where(rule_condition: data_arr.select{|k| k.include?("rule_condition")})  || modelClass.new
                     data_arr.each do |k|
 
@@ -402,17 +456,17 @@ module MachineShop
 
 
                   else
-                    ap "inside else 4 ma array ho yo "
+                    # ap "inside else 4 ma array ho yo "
                     if data_arr.class!=String
 
                       findId = data_arr[:_id] || data_arr["_id"]
-                      ap "getting primary _id is  #{findId}"
+                      # ap "getting primary _id is  #{findId}"
                       @activeObject = modelClass.where(_id: findId).first_or_create
                       # @activeObject = modelClass.where(_id: findId) || modelClass.new
 
-                      ap "now find or initialize and initialized model object is "
-                      ap @activeObject
-                      ap "*******---------**********"
+                      # ap "now find or initialize and initialized model object is "
+                      # ap @activeObject
+                      # ap "*******---------**********"
                       data_arr.each do |k,v|
 
                         val=nil
@@ -432,11 +486,11 @@ module MachineShop
                     end
                   end
                 end
-                ap "----------- #{auth_token}"
+                # ap "----------- #{auth_token}"
 
-                ap "herererererere"
-                ap "activeObject"
-                ap @activeObject.inspect
+                # ap "herererererere"
+                # ap "activeObject"
+                # ap @activeObject.inspect
 
                 @activeObject.auth_token=auth_token
                 @activeObject.save
@@ -451,23 +505,23 @@ module MachineShop
 
 
     def get_from_cache(url, body_hash,auth_token)
-      ap "inside get_from_cache"
+      # ap "inside get_from_cache"
       result =Array.new
       id,klass= Util.get_klass_from_url(url)
       if !TABLE_NAME_BLACKLIST.include?(klass)
         if Util.db_connected?
-          ap "inside db_connected?"
+          # ap "inside db_connected?"
 
           klass = klass.capitalize+"Cache"
 
           modelClass = Object.const_set klass, Class.new(ActiveRecord::Base)
           modelClass.inheritance_column = :_type_disabled
 
-          ap "table name #{klass.pluralize.underscore}"
+          # ap "table name #{klass.pluralize.underscore}"
 
           data_exist=false
           if ActiveRecord::Base.connection.table_exists? CGI.escape(klass.pluralize.underscore)
-            puts "db:table #{klass.pluralize} exists"
+            # puts "db:table #{klass.pluralize} exists"
             resp= nil
             if id
               resp = modelClass.where(_id: id, auth_token: auth_token)

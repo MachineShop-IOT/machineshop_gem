@@ -1,4 +1,5 @@
 module MachineShop
+  require 'json'
   module Util
     def self.objects_to_ids(h)
       case h
@@ -65,6 +66,10 @@ module MachineShop
       when Hash
         new = {}
         object.each do |key, value|
+            if value
+              #for the case of parsing the hash when it's the case of cached retrieval
+            value = (MultiJson.load(value) rescue value) || value
+          end
           key = (key.to_sym rescue key) || key
           new[key] = symbolize_names(value)
         end
@@ -110,6 +115,7 @@ module MachineShop
     end
 
     def self.get_klass_from_url(url)
+      url = url.split('?')[0]
       id=nil
       klass=nil
       splitted = url.split('/')
@@ -128,7 +134,7 @@ module MachineShop
 
     #Check if db_connected
     def self.db_connected?
-      ap "db check----------"
+      # ap "db check----------"
 
       # ap "*******************"
       # ap MachineShop.configuration

@@ -10,41 +10,11 @@ module MachineShop
 
   # class Database
   class Database < Configuration
-
-    # attr_accessor :con, :rs,:db_connected
-
     def initialize()
-
-      puts "____calling _______"
-
-      # @db_connected=true
       begin
-        ap "________________"
-
-        ap ActiveRecord::Base.configurations[Rails.env]
-
-        # ActiveRecord::Base.establish_connection ActiveRecord::Base.configurations[Rails.env]
-
-ActiveRecord::Base.establish_connection(
-        # adapter:  'mysql', # or 'postgresql' or 'sqlite3'
-
-        ActiveRecord::Base.configurations[Rails.env]
-
-  #       adapter: 'postgresql',
-  # encoding: 'unicode',
-  # database: 'machineshop',
-  # pool: 5,
-  # username: 'niroj',
-  # password: 'niroj123'
-
-
-        # adapter: 'mysql',
-        # host:     'localhost',
-        # database: 'machineshop',
-        # username: 'root',
-        # password: 'root'
-
-        # -----------------------------
+        # ap ActiveRecord::Base.configurations[Rails.env]
+        ActiveRecord::Base.establish_connection(
+          ActiveRecord::Base.configurations[Rails.env]
         )
 
       rescue ActiveRecord::AdapterNotSpecified =>e
@@ -61,20 +31,9 @@ ActiveRecord::Base.establish_connection(
         # @db_connected=false
         # raise DatabaseError.new("Connection to Database refused "+e)
         raise DatabaseError.new(e)
-        # load schema file
       end
 
-
-
-
-
-    end
-
-    def self.serialize_data(data)
-      Marshal.dump(data)
     end
 
   end
-
-
 end

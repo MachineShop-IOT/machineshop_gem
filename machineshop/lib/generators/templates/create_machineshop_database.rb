@@ -30,6 +30,8 @@ class CreateMachineshopDatabase < ActiveRecord::Migration
             t.string :user_id
             t.string :updated_at
             t.string :created_at
+            t.text :field_map
+            t.text :headers
             t.string :auth_token
         end
 

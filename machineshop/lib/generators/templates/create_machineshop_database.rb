@@ -179,7 +179,7 @@ class CreateMachineshopDatabase < ActiveRecord::Migration
             t.text :data_source_ids
             t.text :rule_condition
             t.string :device_ids
-            t.string :device_instance_ids
+            t.string :data_source_type_ids
             t.text :downstream_rule_id
             t.string :last_run_status
             t.text :plain_english

@@ -26,6 +26,7 @@ module MachineShop
       self
     end
 
+    #from_cache to disable the retriving of cached content
     def self.retrieve(id, auth_token=nil,from_cache=true)
       instance = self.new(id, auth_token,from_cache)
       instance.refresh

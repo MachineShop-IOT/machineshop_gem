@@ -372,20 +372,21 @@ module MachineShop
           end
 
         else
-          # ap "performing action after #{http_verb} action"
+          ap "performing action after #{http_verb} action"
+          if http_verb==:put
+            data = data[:save_status] if data[:save_status]
+          end
           save_into_cache(url,data,auth_token)
         end
 
-        # if http_verb==:put || http_verb==:post
-        #   ap "update ma jaana paryo "
-
-        # end
       end
     end
 
 
     def save_into_cache(url, data,auth_token)
-      # ap data
+      ap "inside save_into_cache"
+
+      ap data
 
       id,klass= Util.get_klass_from_url(url)
       if !TABLE_NAME_BLACKLIST.include?(klass)
@@ -432,6 +433,9 @@ module MachineShop
                 #moved from here to (1)
               end
               #(1)
+ap "updating this object "
+              ap @activeObject
+              ap "-----------bujis-----------"
               @activeObject.save
 
 

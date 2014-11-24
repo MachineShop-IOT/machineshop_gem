@@ -22,6 +22,7 @@ Gem::Specification.new do |gem|
 
   # gem.add_runtime_dependency 'mysql'
   gem.add_dependency 'mysql'
+  gem.add_dependency 'will_paginate'
 
   gem.add_dependency 'addressable'
   gem.add_dependency 'rest-client'#, '~> 1.6.7'

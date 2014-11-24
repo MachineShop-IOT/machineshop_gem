@@ -153,7 +153,7 @@ module MachineShop
 
     def platform_request(url, auth_token, body_hash=nil, http_verb=:get , multipart=false)
       # ap "yaha url is #{url}"
-      # ap "body_hash is #{body_hash}"
+      ap "body_hash is #{body_hash}"
       rbody=nil
       cachedContent = :true
       # ApiRequest.cache(url,MachineShop.configuration.expiry_time)
@@ -162,7 +162,7 @@ module MachineShop
         if Util.db_connected?
 
           ApiRequest.cache(url, auth_token, MachineShop.configuration.expiry_time) do
-            puts "Not expired , calling from local "
+            ap "Not expired , calling from local "
             rbody = get_from_cache(url,body_hash,auth_token)
             rcode="200"
           end
@@ -427,6 +427,7 @@ module MachineShop
                 if @activeObject.respond_to?(k)
                   @activeObject.send("#{k}=",val)
                 end
+                @activeObject.auth_token = auth_token
                 # @activeObject.save
                 #moved from here to (1)
               end
@@ -506,6 +507,7 @@ module MachineShop
 
     def get_from_cache(url, body_hash,auth_token)
       # ap "inside get_from_cache"
+
       result =Array.new
       id,klass= Util.get_klass_from_url(url)
       if !TABLE_NAME_BLACKLIST.include?(klass)
@@ -529,6 +531,7 @@ module MachineShop
             else
               # pagination = body_hash.select{|k| k==:per_page || k==:page} if body_hash
               resp = modelClass.where(parse_query_string(body_hash,auth_token))
+              # .paginate(:page=>body_hash[:page],:per_page=>body_hash[:per_page])
               data_exist = true if resp.exists?
             end
 

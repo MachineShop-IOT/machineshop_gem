@@ -18,16 +18,16 @@ module MachineShop
         )
 
       rescue ActiveRecord::AdapterNotSpecified =>e
-        puts "yaha1"
+        # puts "yaha1"
         raise DatabaseError.new(e)
       rescue ActiveRecord::AdapterNotFound =>e
-        puts "yaha2"
+        # puts "yaha2"
         raise DatabaseError.new(e)
       rescue StandardError =>e
-        puts "yaha3"
+        # puts "yaha3"
         raise DatabaseError.new(e)
       rescue Exception => e
-        puts "yaha4"
+        # puts "yaha4"
         # @db_connected=false
         # raise DatabaseError.new("Connection to Database refused "+e)
         raise DatabaseError.new(e)

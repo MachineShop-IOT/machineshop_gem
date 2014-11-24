@@ -10,7 +10,7 @@ module MachineShop
       undef :id
     end
 
-    def initialize(id=nil, auth_token=nil)
+    def initialize(id=nil, auth_token=nil, from_cache=nil)
       # parameter overloading!
       if id.kind_of?(Hash)
         @retrieve_options = id.dup
@@ -21,6 +21,7 @@ module MachineShop
       end
 
       @auth_token = auth_token    
+      @from_cache = from_cache    
 
       @values = {}
       # This really belongs in APIResource, but not putting it there allows us

@@ -506,8 +506,11 @@ module MachineShop
 
 
     def get_from_cache(url, body_hash,auth_token)
-      # ap "inside get_from_cache"
+      ap "inside get_from_cache"
 
+ap "yaha body_hash"
+      ap body_hash
+ap "-----------"
       result =Array.new
       id,klass= Util.get_klass_from_url(url)
       if !TABLE_NAME_BLACKLIST.include?(klass)
@@ -526,8 +529,11 @@ module MachineShop
             # puts "db:table #{klass.pluralize} exists"
             resp= nil
             if id
+              if body_hash[:from_cache]!=false
+               # && body_hash[:from_cache]==false
               resp = modelClass.where(_id: id, auth_token: auth_token)
               data_exist=true if resp
+            end
             else
               pagination = body_hash.select{|k| k==:per_page || k==:page} if body_hash
               ap "_---------______"

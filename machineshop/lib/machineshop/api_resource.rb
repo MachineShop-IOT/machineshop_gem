@@ -21,13 +21,13 @@ module MachineShop
     end
 
     def refresh      
-      response = MachineShop.gem_get(url, @auth_token)
+      response = MachineShop.gem_get(url, @auth_token,{:from_cache=> @from_cache})
       refresh_from(response, auth_token)
       self
     end
 
-    def self.retrieve(id, auth_token=nil)
-      instance = self.new(id, auth_token)
+    def self.retrieve(id, auth_token=nil,from_cache=true)
+      instance = self.new(id, auth_token,from_cache)
       instance.refresh
       instance
     end

@@ -353,7 +353,7 @@ module MachineShop
 
               # ap "______model object__________"
               # ap modelClass.inspect
-              # modelClass.inheritance_column = :_type_disabled
+              modelClass.inheritance_column = :_type_disabled
               #Because 'type' is reserved for storing the class in case of inheritance and our array has "TYPE" key
 
               if ActiveRecord::Base.connection.table_exists? CGI.escape(klass.pluralize.underscore)
@@ -529,8 +529,12 @@ module MachineShop
               resp = modelClass.where(_id: id, auth_token: auth_token)
               data_exist=true if resp
             else
-              # pagination = body_hash.select{|k| k==:per_page || k==:page} if body_hash
+              pagination = body_hash.select{|k| k==:per_page || k==:page} if body_hash
+              ap "_---------______"
+              ap pagination
+              ap "_---------______"
               resp = modelClass.where(parse_query_string(body_hash,auth_token))
+              resp = resp.paginate(pagination) if !pagination.empty?
               # .paginate(:page=>body_hash[:page],:per_page=>body_hash[:per_page])
               data_exist = true if resp.exists?
             end

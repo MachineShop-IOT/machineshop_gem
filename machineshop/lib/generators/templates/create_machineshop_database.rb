@@ -141,7 +141,7 @@ class CreateMachineshopDatabase < ActiveRecord::Migration
             t.string :rule_description
             t.timestamp
         end
-
+#v0
         create_table :rule_caches do |t|
             t.string :_id
             t.string :active
@@ -167,6 +167,37 @@ class CreateMachineshopDatabase < ActiveRecord::Migration
             t.string :operator
             t.string :rule_histories
             t.string :else_actions
+        end
+
+#v1
+        create_table :rules_caches do |t|
+            t.string :_id
+            t.string :active
+            t.string :created_at
+            t.string :deleted_at
+            t.string :description
+            t.text :data_source_ids
+            t.text :rule_condition
+            t.string :device_ids
+            t.string :device_instance_ids
+            t.text :downstream_rule_id
+            t.string :last_run_status
+            t.text :plain_english
+            t.string :tag_ids
+            t.string :updated_at
+            t.string :user_id
+            t.string :auth_token
+            t.string :actions
+            t.string :comparison_value
+            t.string :deleted
+            t.string :device_attribute
+            t.string :last_run
+            t.string :modified_date
+            t.string :operator
+            t.string :rule_histories
+            t.text :then_actions
+            t.string :else_actions
+            t.string :delayed_actions
         end
 
 

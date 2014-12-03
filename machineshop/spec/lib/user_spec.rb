@@ -37,13 +37,13 @@ describe MachineShop::Users do
     user.should be_kind_of MachineShop::Users
   end
 
-  tmpfile = "abc.png"
+  # tmpfile = "abc.png"
 
-  logo = File.open(tmpfile, "r")
+  # logo = File.open(tmpfile, "r")
 
-  it "should create logo" do 
-    logo = MachineShop::Users.create_user_logo(user.id,{logo: logo}, auth_token)
-  end
+  # it "should create logo" do 
+  #   logo = MachineShop::Users.create_user_logo(user.id,{logo: logo}, auth_token)
+  # end
 
 
   it "should get all roles from a static instance" do

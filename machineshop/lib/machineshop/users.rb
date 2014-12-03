@@ -9,8 +9,8 @@ module MachineShop
     def self.authenticate(user_hash)
       response = MachineShop.gem_post(authenticate_url, nil, user_hash)            
       auth_token = response[:authentication_token]
-      id = response[:_id]
-      return id, response
+      # id = response[:_id]
+      return auth_token, response
       
       # return auth_token, self.retrieve(id, auth_token)
     end

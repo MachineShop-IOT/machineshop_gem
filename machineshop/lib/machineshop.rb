@@ -127,17 +127,10 @@ module MachineShop
 
     def gem_delete(url, auth_token, *params)
       platform_request(url, auth_token, nil ,:delete)
-      # response =
-      # after_platform_request(url, response , auth_token, :delete)
-      # return response
-
     end
 
     def gem_put(url, auth_token, body_hash)
       platform_request(url, auth_token, body_hash, :put)
-      # response =
-      # after_platform_request(url, response, auth_token, :put)
-      # return response
     end
 
     def gem_multipart(url, auth_token, body_hash)
@@ -156,6 +149,7 @@ module MachineShop
       ap "body_hash is #{body_hash}"
       rbody=nil
       cachedContent = :true
+      #this Variable is used as flag to determine if the returned result is from local cache
       # ApiRequest.cache(url,MachineShop.configuration.expiry_time)
       if http_verb==:get
 
@@ -240,25 +234,18 @@ module MachineShop
 
         # ap "cachedContent ==== #{cachedContent}"
 
-        if http_verb == :get
+        #cache operations , needs util.db_connected to be true
+        if Util.db_connected?
+
           if cachedContent==:false
-            # ap "get and cachedContent == false"
-            save_into_cache(url,resp,auth_token)
+            #resp is not from remote platform
+            # save_into_cache(url,resp,auth_token)
+            after_platform_request(url,resp,auth_token,http_verb)
           else
-            #this is obtained from cache
-            # ap "this is obtained from cache"
-            #need to perform some actions 
-            # ap "--from cache--"
-            # ap resp
-            # ap "--from cache-- end"
-
-
+            #this is already obtained from cache
+            # DO NOTHING
           end
-
-        else
-          # ap "else "
-            after_platform_request(url, resp, auth_token, http_verb)
-        end
+      end
 
         return resp
       rescue MultiJson::DecodeError

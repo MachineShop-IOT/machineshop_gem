@@ -22,6 +22,11 @@ publisher_password = 'password'
       :password => publisher_password
   )
 
+ap "--------------"
+ap auth_token
+ap "****************"
+  ap user
+
 
 describe MachineShop::Rules do
 

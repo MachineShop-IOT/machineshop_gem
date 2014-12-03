@@ -10,7 +10,7 @@ module MachineShop
 
   # class Database
   class Database < Configuration
-    def initialize()
+    def initialize
       begin
         # ap ActiveRecord::Base.configurations[Rails.env]
         ActiveRecord::Base.establish_connection(

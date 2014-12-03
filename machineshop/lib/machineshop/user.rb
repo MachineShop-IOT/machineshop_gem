@@ -3,7 +3,6 @@ module MachineShop
     
     # Specific API calls
     def self.authenticate(user_hash)
-      ap "here authenticate inside gem "
       response = MachineShop.gem_post(authenticate_url, nil, user_hash)            
       auth_token = response[:authentication_token]
       id = response[:_id]

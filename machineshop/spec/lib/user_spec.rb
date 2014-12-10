@@ -25,8 +25,8 @@ describe MachineShop::Users do
       
     rescue Exception => e
       ap "exception ------------"
-      ap e.message
-      ap e.http_status
+      # ap e.message
+      # ap e.http_status
       
     end
 
@@ -34,8 +34,29 @@ describe MachineShop::Users do
     # ap user.as_json
     auth_token.should_not be_nil
     user.should_not be_nil
-    user.should be_kind_of MachineShop::Users
+    # user.should be_kind_of MachineShop::Users
   end
+
+  it "should send instruction to reset password " do
+    begin
+      
+    reset = MachineShop::Users.password_reset("niroj@bajratechnologies.com",auth_token)
+    ap reset
+    rescue Exception => e
+      puts e
+    end
+  end
+
+  it "should reset the password" do
+    begin
+      
+    reset_complete = MachineShop::Users.password_reset_complete("5KexNcXpygS94T9wFF6a",{password: "new_password", password_confirmation: "new_password"})
+    ap reset_complete
+    rescue Exception => e
+      puts e
+    end
+  end
+
 
   # tmpfile = "abc.png"
 

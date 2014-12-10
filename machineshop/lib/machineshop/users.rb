@@ -59,6 +59,14 @@ module MachineShop
       MachineShop.gem_delete(self.url+"/#{id}", auth_token)
     end
 
+    def self.password_reset(email,auth_token)
+      MachineShop.gem_post("/platform/password_reset",auth_token, {email: email})
+    end
+
+    def self.password_reset_complete(reset_token,password_hash)
+      MachineShop.gem_post("/platform/password_reset/#{reset_token}",nil, password_hash)
+    end
+
     private
 
     def self.authenticate_url

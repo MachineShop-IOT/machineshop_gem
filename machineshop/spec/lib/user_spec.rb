@@ -40,7 +40,7 @@ describe MachineShop::Users do
   it "should send instruction to reset password " do
     begin
       
-    reset = MachineShop::Users.password_reset("niroj@bajratechnologies.com",auth_token)
+    reset = MachineShop::Users.password_reset(auth_token, {email: "niroj@bajratechnologies.com", domain: "machineshop", send_email: false})
     ap reset
     rescue Exception => e
       puts e

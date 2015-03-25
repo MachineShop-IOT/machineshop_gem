@@ -31,7 +31,7 @@ module MachineShop
     end
 
     def self.construct_from(values, auth_token=nil)
-      if(!values.respond_to?("id"))
+      if(!values[:id])
         values[:id] = values[:_id] if values[:_id]
       end
       obj = self.new(values[:id], auth_token)
@@ -57,7 +57,7 @@ module MachineShop
         #do nothing
       end
 
-      if !values.respond_to?("id")
+      if(!values[:id])
         values[:id] = values[:_id] if values[:_id]
       end
 

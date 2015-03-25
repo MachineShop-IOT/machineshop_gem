@@ -6,7 +6,7 @@ module MachineShop
 
     # Specific API calls
     def payload_fields(params=nil)
-      MachineShop.get(payload_fields_url, @auth_token, params)
+      MachineShop.gem_get(payload_fields_url, @auth_token, params)
     end
 
     def create_instance(params)

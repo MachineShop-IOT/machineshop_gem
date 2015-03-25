@@ -7,7 +7,7 @@ module MachineShop
     # Specific API calls
     
     def report_count(params)      
-      MachineShop.get(report_count_url, @auth_token, params)
+      MachineShop.gem_get(report_count_url, @auth_token, params)
     end
     
     def reports(filters={})

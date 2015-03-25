@@ -2,15 +2,15 @@ module MachineShop
   class Mapping
     # Specific API calls
     def self.geocode(params={}, auth_token)
-      MachineShop.get(geocode_url, auth_token, params)
+      MachineShop.gem_get(geocode_url, auth_token, params)
     end
 
     def self.directions(params={}, auth_token)
-      MachineShop.get(directions_url, auth_token, params)
+      MachineShop.gem_get(directions_url, auth_token, params)
     end
 
     def self.distance(params={}, auth_token)
-      MachineShop.get(distance_url, auth_token, params)
+      MachineShop.gem_get(distance_url, auth_token, params)
     end
 
     private

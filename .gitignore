@@ -41,3 +41,5 @@ emacs-config.el
 .rvmrc
 .project
 nbproject/
+.idea
+.idea/*

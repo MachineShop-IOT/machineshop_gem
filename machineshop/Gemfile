@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 # Specify your gem's dependencies in machineshop.gemspec
 gemspec
 
-gem "mysql"
+# gem "mysql"
 gem "activerecord"
 gem "awesome_print"
+gem 'will_paginate'

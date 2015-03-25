@@ -7,7 +7,14 @@ MachineShop.api_base_url= 'http://stage.services.machineshop.io/api/v0'
 publisher_username = 'admin@csr.com'
 publisher_password = 'password'
 
-
+MachineShop.configure do |config|
+  config.db_name = "machineshop"
+  config.db_username="root"
+  config.db_password="root"
+  config.db_host= "localhost"
+  config.expiry_time= lambda{120.seconds.ago}
+   #second
+end
   auth_token, user = MachineShop::User.authenticate(
       :email => publisher_username,
       :password => publisher_password
@@ -34,7 +41,7 @@ specificDevice = nil
 
 
   it "should get a device for the user by id" do
-    specificDevice = MachineShop::Device.retrieve(device.id, auth_token)
+    specificDevice = MachineShop::Device.retrieve(device[:id], auth_token)
 
     ap "Device by id"
     ap specificDevice.as_json
@@ -126,7 +133,7 @@ describe MachineShop::DeviceInstance do
 
 
   it "should get a device instance by id" do
-    element_data = MachineShop::DeviceInstance.retrieve(device_instance.id, auth_token)
+    element_data = MachineShop::DeviceInstance.retrieve("5395835f385f7f53ec000160", auth_token)
 
     ap "Device Instance by id: "
     ap element_data.as_json

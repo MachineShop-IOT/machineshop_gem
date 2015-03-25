@@ -8,10 +8,11 @@ publisher_username = 'admin@csr.com'
 publisher_password = 'password'
 
 
-  auth_token, user = MachineShop::User.authenticate(
-      :email => publisher_username,
-      :password => publisher_password
-  )
+  auth_token ="fghjkljkl"
+  # , user = MachineShop::User.authenticate(
+  #     :email => publisher_username,
+  #     :password => publisher_password
+  # )
 
 describe MachineShop::DeviceInstance do
 
@@ -21,7 +22,7 @@ specificDevice = nil
 device = nil
 
   it "should get all devices for the user" do
-    element_data = MachineShop::Device.all(
+    element_data = MachineShop::DeviceInstance.all(
         {:page => 1,
          :per_page => 10},
         auth_token)

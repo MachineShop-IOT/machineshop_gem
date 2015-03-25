@@ -4,7 +4,7 @@ module MachineShop
     module Create
       module ClassMethods
         def create(params={}, auth_token=nil)
-          response = MachineShop.post(self.url, auth_token, params)
+          response = MachineShop.gem_post(self.url, auth_token, params)
           Util.convert_to_machineshop_object(response, auth_token, self.class_name)
         end
       end

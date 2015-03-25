@@ -18,7 +18,19 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'rspec'
     
+  # gem.add_development_dependency 'mysql'
+
+  # gem.add_runtime_dependency 'mysql'
+  gem.add_dependency 'mysql'
+
   gem.add_dependency 'addressable'
   gem.add_dependency 'rest-client'#, '~> 1.6.7'
   gem.add_dependency('multi_json', '>= 1.0.4', '< 2')
+  # gem.add_dependency('activerecord', '>= 4.1.1')
+  gem.add_dependency('activerecord', '>= 3.2.12')
+  # gem.add_dependency('activerecord', '>= 4.0.0')
+  gem.required_ruby_version = '>= 1.9.3'
+  gem.post_install_message = "Thanks for installing Machineshop gem, Enjoy!!"
+  gem.requirements << 'mysql, activerecord'
+  
 end

@@ -1,10 +1,12 @@
 module MachineShop
-  class Report < APIResource
+  class Reports < APIResource
     include MachineShop::APIOperations::List    
     include MachineShop::APIOperations::Create    
     
     def self.url()
-      "/monitor/#{CGI.escape(class_name.underscore)}"
+      ret = "/monitor/#{CGI.escape(class_name.underscore)}"
+      ap ret
+      ret
     end
 
   end

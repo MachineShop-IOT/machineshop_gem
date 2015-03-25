@@ -1,12 +1,17 @@
 module MachineShop
-  class User < APIResource
-    
+  class Users < APIResource
+    include MachineShop::APIOperations::List
+    include MachineShop::APIOperations::Create
+    include MachineShop::APIOperations::Delete
+    include MachineShop::APIOperations::Update
+
     # Specific API calls
     def self.authenticate(user_hash)
       response = MachineShop.gem_post(authenticate_url, nil, user_hash)            
       auth_token = response[:authentication_token]
       # id = response[:_id]
-      return auth_token, response      
+      return auth_token, response
+      
       # return auth_token, self.retrieve(id, auth_token)
     end
     
@@ -16,6 +21,10 @@ module MachineShop
     
     def all_roles
       MachineShop.gem_get(self.class.role_url, @auth_token)
+    end
+
+    def self.new_api_key(user_id,auth_token)
+      MachineShop.gem_get("#{self.url}/#{user_id}/new_api_key", auth_token)
     end       
     
     def device_instances(filters={})
@@ -35,18 +44,29 @@ module MachineShop
 
 
     def self.create_user_logo(user_id, params, auth_token)
-      MachineShop.gem_multipart(self.url+"/#{user_id}/logo", auth_token, params)
+      MachineShop.gem_multipart("/platform/users/#{user_id}/logo", auth_token, params)
     end
 
     def self.delete_user_logo(user_id, auth_token)
-      MachineShop.gem_delete(self.url+"/#{user_id}/logo", auth_token)
+      MachineShop.gem_delete("/platform/users/#{user_id}/logo", auth_token)
     end
 
     def self.check_user_versions(user_hash)
       MachineShop.gem_get("/user_session/user/versions",nil, user_hash)
     end
 
-    
+    def self.delete(id,auth_token)
+      MachineShop.gem_delete(self.url+"/#{id}", auth_token)
+    end
+
+    def self.password_reset(params_hash)
+      MachineShop.gem_post("/platform/password_reset",nil, params_hash)
+    end
+
+    def self.password_reset_complete(reset_token,password_hash)
+      MachineShop.gem_post("/platform/password_reset/#{reset_token}",nil, password_hash)
+    end
+
     private
 
     def self.authenticate_url
@@ -54,7 +74,7 @@ module MachineShop
     end
 
     def self.role_url
-      '/platform/role'
+      '/platform/roles'
     end
     
   end

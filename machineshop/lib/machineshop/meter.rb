@@ -3,8 +3,7 @@ module MachineShop
   include MachineShop::APIOperations::List    
 
     def self.url()    
-      ret = "/platform/data/#{CGI.escape(class_name.underscore)}"
-      ret
+      "/platform/data/#{CGI.escape(class_name.underscore)}"
     end
     
   end

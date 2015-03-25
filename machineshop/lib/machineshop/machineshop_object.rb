@@ -20,7 +20,8 @@ module MachineShop
         @retrieve_options = {}
       end
 
-      @auth_token = auth_token
+      @auth_token = auth_token    
+
       @values = {}
       # This really belongs in APIResource, but not putting it there allows us
       # to have a unified inspect method
@@ -30,7 +31,9 @@ module MachineShop
     end
 
     def self.construct_from(values, auth_token=nil)
-      values[:id] = values[:_id] if values[:_id]
+      if(!values.respond_to?("id"))
+        values[:id] = values[:_id] if values[:_id]
+      end
       obj = self.new(values[:id], auth_token)
       obj.refresh_from(values, auth_token)
       obj
@@ -53,7 +56,10 @@ module MachineShop
       else
         #do nothing
       end
-      values[:id] = values[:_id] if values[:_id]
+
+      if !values.respond_to?("id")
+        values[:id] = values[:_id] if values[:_id]
+      end
 
       removed = partial ? Set.new : Set.new(@values.keys - values.keys)
       added = Set.new(values.keys - @values.keys)

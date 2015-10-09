@@ -70,7 +70,7 @@ module MachineShop
     private
 
     def self.authenticate_url
-      '/platform/user/authenticate'
+      '/user_session/user/authenticate'
     end
 
     def self.role_url

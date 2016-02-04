@@ -14,14 +14,14 @@ Gem::Specification.new do |gem|
   gem.name          = "machineshop"
   gem.require_paths = ["lib"]
   gem.version       = MachineShop::VERSION
-  
+
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'rspec'
-    
+
   # gem.add_development_dependency 'mysql'
 
   # gem.add_runtime_dependency 'mysql'
-  gem.add_dependency 'mysql'
+  # gem.add_dependency 'mysql'
 
   gem.add_dependency 'addressable'
   gem.add_dependency 'rest-client'#, '~> 1.6.7'
@@ -31,6 +31,6 @@ Gem::Specification.new do |gem|
   # gem.add_dependency('activerecord', '>= 4.0.0')
   gem.required_ruby_version = '>= 1.9.3'
   gem.post_install_message = "Thanks for installing Machineshop gem, Enjoy!!"
-  gem.requirements << 'mysql, activerecord'
-  
+  gem.requirements << 'activerecord'
+
 end

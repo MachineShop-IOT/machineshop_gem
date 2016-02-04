@@ -14,7 +14,6 @@ require 'multi_json'
 #configurations
 require 'machineshop/configuration'
 #database
-#require 'machineshop/database'
 
 # API operations
 require 'machineshop/api_operations/create'

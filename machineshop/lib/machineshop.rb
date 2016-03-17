@@ -193,7 +193,7 @@ module MachineShop
 
           opts[:payload] = multipart ?  {:multipart=>true}.merge!(body_hash) :MachineShop::JSON.dump(body_hash)
         end
-        ap "request params: #{opts} "
+        ap "request params are as follows : #{opts} "
 
         begin
           response = execute_request(opts)

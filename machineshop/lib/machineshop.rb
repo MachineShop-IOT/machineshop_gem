@@ -51,6 +51,7 @@ require 'machineshop/end_points'
 
 require 'machineshop/data_sources'
 require 'machineshop/data_source_types'
+require 'machineshop/gateway_data_source_types'
 
 # Errors
 require 'machineshop/errors/machineshop_error'
@@ -145,7 +146,7 @@ module MachineShop
       end
 
       def platform_request(url, auth_token, body_hash=nil, http_verb=:get , multipart=false)
-        ap "----- hahah url is #{url}"
+        ap "-----  url is #{url}"
         rbody=nil
         cachedContent = :true
       # ApiRequest.cache(url,MachineShop.configuration.expiry_time)

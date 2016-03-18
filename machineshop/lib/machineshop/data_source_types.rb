@@ -22,7 +22,7 @@ module MachineShop
     end
 
     def self.delete_data_source_type(id, auth_token)
-      response = MachineShop.gem_delete(self.url + "/#{id}", auth_token, {})
+      MachineShop.gem_delete(self.url + "/#{id}", auth_token, {})
     end
 
     private

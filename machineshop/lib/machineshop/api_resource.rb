@@ -20,7 +20,7 @@ module MachineShop
       ret
     end
 
-    def refresh      
+    def refresh
       response = MachineShop.gem_get(url, @auth_token)
       refresh_from(response, auth_token)
       self

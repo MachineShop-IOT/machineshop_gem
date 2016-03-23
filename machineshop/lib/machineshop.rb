@@ -51,7 +51,10 @@ require 'machineshop/end_points'
 
 require 'machineshop/data_sources'
 require 'machineshop/data_source_types'
+require 'machineshop/gateway_data_sources'
 require 'machineshop/gateway_data_source_types'
+
+require 'machineshop/gateway_configs'
 
 # Errors
 require 'machineshop/errors/machineshop_error'

@@ -149,7 +149,6 @@ module MachineShop
       end
 
       def platform_request(url, auth_token, body_hash=nil, http_verb=:get , multipart=false)
-        ap "-----  url is #{url}"
         rbody=nil
         cachedContent = :true
       # ApiRequest.cache(url,MachineShop.configuration.expiry_time)
@@ -158,7 +157,6 @@ module MachineShop
         if Util.db_connected?
 
           ApiRequest.cache(url, auth_token, MachineShop.configuration.expiry_time) do
-            puts "Not expired , calling from local "
             rbody = get_from_cache(url,body_hash,auth_token)
             rcode="200"
           end
@@ -197,7 +195,6 @@ module MachineShop
 
           opts[:payload] = multipart ?  {:multipart=>true}.merge!(body_hash) :MachineShop::JSON.dump(body_hash)
         end
-        ap "request params are as follows : #{opts} "
 
         begin
           response = execute_request(opts)

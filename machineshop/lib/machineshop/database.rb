@@ -4,7 +4,7 @@ module MachineShop
   # require 'machineshop/errors/api_error'
   require 'machineshop/errors/database_error'
   require 'machineshop/errors/schema_error'
-  require 'mysql'
+  # require 'mysql'
   require 'active_record'
   # require 'machineshop/configuration'
 

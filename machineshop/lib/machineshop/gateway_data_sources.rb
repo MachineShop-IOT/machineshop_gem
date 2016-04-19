@@ -52,7 +52,7 @@ module MachineShop
       MachineShop.gem_get("/platform/gateway_data_sources/#{id}/logs", auth_token)
     end
 
-    def self.list_firmware_files(id, auth_token)
+    def self.list_firmware(id, auth_token)
       MachineShop.gem_get("/platform/gateway_data_sources/#{id}/firmware", auth_token)
     end
 

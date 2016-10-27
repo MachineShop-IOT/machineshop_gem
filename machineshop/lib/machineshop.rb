@@ -236,7 +236,6 @@ module MachineShop
       rescue MultiJson::DecodeError
         raise APIError.new("Invalid response object from API: #{rbody.inspect} (HTTP response code was #{rcode})", rcode, rbody)
       end
-
     end
 
 
@@ -246,9 +245,9 @@ module MachineShop
 
     def handle_api_error(rcode, rbody)
       begin
-        error_obj = MachineShop::JSON.load(rbody)
+        error_obj = MachineShop::JSON.load(rbody.gsub(/\\n/, " "))
         error_obj = Util.symbolize_names(error_obj)
-        error = error_obj[:error] or raise MachineShopError.new # escape from parsing
+        error = error_obj[:error] || error_obj[:errors] or raise MachineShopError.new # escape from parsing
       rescue MultiJson::DecodeError, MachineShopError
         raise APIError.new("Invalid response object from API: #{rbody.inspect} (HTTP response code was #{rcode})", rcode, rbody)
       end

@@ -40,6 +40,10 @@ module MachineShop
       MachineShop.gem_delete("/platform/gateway_data_sources/#{id}/attached_data_sources/#{ds_id}", auth_token)
     end
 
+    def self.data_reset(id, auth_token, params={})
+      MachineShop.gem_post("/platform/gateway_data_sources/#{id}/data_reset", auth_token, params)
+    end
+
     def self.initiate_log_upload(id, auth_token, params={})
       MachineShop.gem_post("/platform/gateway_data_sources/#{id}/log_upload", auth_token, params)
     end

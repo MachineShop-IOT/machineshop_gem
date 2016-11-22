@@ -30,5 +30,12 @@ module MachineShop
       MachineShop.gem_post("/platform/gateway_configs/#{id}/send_gateway_config", auth_token, {})
     end
 
+    def self.update_firmware(id, auth_token)
+      MachineShop.gem_post("/platform/gateway_configs/#{id}/update_firmware", auth_token, {})
+    end
+
+    def self.update_edge(id, auth_token)
+      MachineShop.gem_post("/platform/gateway_configs/#{id}/update_edge_version", auth_token, {})
+    end
   end
 end

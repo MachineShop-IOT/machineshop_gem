@@ -14,5 +14,13 @@ module MachineShop
       MachineShop.gem_delete(self.url + "/#{id}", auth_token, {})
     end
 
+    def self.list_firmware(id, auth_token)
+      MachineShop.gem_get("/platform/gateway_data_source_types/#{id}/firmware", auth_token)
+    end
+
+    def self.list_edge_updates(id, auth_token)
+      MachineShop.gem_get("/platform/gateway_data_source_types/#{id}/list_edge_updates", auth_token)
+    end
+
   end
 end

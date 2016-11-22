@@ -56,14 +56,6 @@ module MachineShop
       MachineShop.gem_get("/platform/gateway_data_sources/#{id}/logs", auth_token)
     end
 
-    def self.list_firmware(id, auth_token)
-      MachineShop.gem_get("/platform/gateway_data_sources/#{id}/firmware", auth_token)
-    end
-
-    def self.list_edge_updates(id, auth_token)
-      MachineShop.gem_get("/platform/gateway_data_sources/#{id}/list_edge_updates", auth_token)
-    end
-
     def self.firmware_update(id, auth_token, params={})
       MachineShop.gem_post("/platform/gateway_data_sources/#{id}/update_firmware", auth_token, params)
     end

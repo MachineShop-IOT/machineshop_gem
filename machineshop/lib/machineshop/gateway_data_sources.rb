@@ -14,6 +14,10 @@ module MachineShop
       MachineShop.gem_delete(self.url + "/#{id}", auth_token, {})
     end
 
+    def self.delete_and_reset(id, auth_token)
+      MachineShop.gem_delete(self.url + "/#{id}?data_reset=true", auth_token, {})
+    end
+
     def self.get_attached_data_sources(gateway_data_source_id, auth_token)
       response = MachineShop.gem_get("/platform/gateway_data_sources/#{gateway_data_source_id}/attached_data_sources", auth_token)
       Util.convert_to_machineshop_object(response, auth_token, self.class_name)
